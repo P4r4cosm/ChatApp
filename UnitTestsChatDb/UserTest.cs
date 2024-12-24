@@ -11,12 +11,22 @@ namespace UnitTestsChatDb
         {
             //Arrange
             var user = new User { Name = "Username", Age = 20 };
-            var recipient = new User { Name = "Recipient", Age=19 };
-
+            var recipient = new User { Name = "Recipient", Age = 19 };
             //Act
             var message = user.SendMessage("content", recipient);
             //Assert
-            Assert.AreEqual(new Message {Text="content", Recipient=recipient, Sender=user}, message);
+            Assert.AreEqual(new Message { Text = "content", Recipient = recipient, Sender = user }, message);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SendMessageTest_ReturnException()
+        {
+            //Arrange
+            var user = new User { Name = "Username", Age = 20 };
+            //Act
+
+            var message = user.SendMessage("content", null);
+
         }
     }
 }
