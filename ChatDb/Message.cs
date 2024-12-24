@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatDb
 {
-    internal class Message
+    public class Message
     {
         public int Id { get; set; }
         public string Text { get; set; } = null!;
@@ -20,6 +20,14 @@ namespace ChatDb
         public override string ToString()
         {
             return $"{Text}\r\n\tОтправлено (кем): {Sender.Name}\t (кому): {Recipient.Name}";
+        }
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Message other) return false;
+            return Id == other.Id &&
+                Text == other.Text &&
+                Sender == other.Sender &&
+                Recipient == other.Recipient;
         }
     }
 }

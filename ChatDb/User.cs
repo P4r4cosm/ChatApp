@@ -7,7 +7,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace ChatDb
 {
-    internal class User
+    public class User
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
