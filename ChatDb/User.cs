@@ -12,6 +12,7 @@ namespace ChatDb
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public int? Age { get; set; }
+        public string Password { get; set; }
         public override string ToString()
         {
             return $"User {Id}: {Name} Age: {Age}";
@@ -19,8 +20,6 @@ namespace ChatDb
         public Message SendMessage(string content, User recipient)
         {
             if (recipient is null) throw new ArgumentNullException(nameof(recipient));
-
-
             return new Message { Text = content, Recipient=recipient, Sender=this};
         }
     }

@@ -7,6 +7,7 @@ namespace ChatDb
     {
         static void Main(string[] args)
         {
+            #region bd
             using (var db = new ChatContext())
             {
                 bool isAvailable = db.Database.CanConnect();
@@ -29,6 +30,7 @@ namespace ChatDb
                     Console.WriteLine(message);
                 }
             }
+            #endregion
         }
     }
 }

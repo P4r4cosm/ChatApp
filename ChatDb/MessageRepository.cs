@@ -63,7 +63,6 @@ namespace ChatDb
                 Console.WriteLine(ex.Message);
                 return Enumerable.Empty<Message>().AsQueryable();
             }
-
         }
     }
 }
