@@ -12,7 +12,8 @@ namespace ChatDb
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public int? Age { get; set; }
-        public string Password { get; set; }
+        public string Password { get; set; } =null!;
+        public string Salt { get; set; } = null!;
         public override string ToString()
         {
             return $"User {Id}: {Name} Age: {Age}";

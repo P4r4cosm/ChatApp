@@ -17,7 +17,7 @@ namespace ChatDb
             }
             salt = Convert.ToBase64String(saltBytes);
 
-            using (var pdkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 100_000))
+            using (var pdkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 100_000, HashAlgorithmName.SHA256))
             {
                 byte[] hashBytes = pdkdf2.GetBytes(32);
                 return Convert.ToBase64String(hashBytes);
@@ -27,7 +27,7 @@ namespace ChatDb
         {
             byte[] saltBytes = Convert.FromBase64String(storedSalt);
 
-            using (var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 100_000))
+            using (var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 100_000, HashAlgorithmName.SHA256))
             {
                 byte[] hashBytes = pbkdf2.GetBytes(32);
                 string computedHash = Convert.ToBase64String(hashBytes);

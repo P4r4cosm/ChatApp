@@ -62,7 +62,6 @@ namespace ChatDb
                 return Enumerable.Empty<User>().AsQueryable();
 
             }
-
         }
     }
 }

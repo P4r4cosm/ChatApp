@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 namespace ChatDb
 {
-    class Program
+    class ChatDbProgram
     {
         static void Main(string[] args)
         {

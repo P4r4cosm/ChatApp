@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text;
 
-class Program
+class ClientTcpProgram
 {
     static async void SendMessageToServer(string message, NetworkStream stream)
     {
