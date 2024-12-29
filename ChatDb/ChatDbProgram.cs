@@ -14,8 +14,19 @@ namespace ChatDb
                 Console.WriteLine(isAvailable ? "Успешное подключение к базе" : "Не удалось подключиться");
                 var messageRepository = new MessageRepository(db);
                 var userRepositoty = new UserRepository(db);
-                //userRepositoty.CreateUser(new User { Name = "Paracosm", Age = 20 });
-                //userRepositoty.CreateUser(new User {Name="Nastya", Age=20 });
+                #region addusers
+                //var paracosmHash = PasswordManager.HashPassword("61323", out string salt);
+                //Console.WriteLine(paracosmHash + "   "+ salt);
+                //Console.WriteLine(PasswordManager.VerifyPassword("61323", paracosmHash, salt));
+                //userRepositoty.CreateUser(new User { Name = "Paracosm", Age = 20, Password=paracosmHash, Salt=salt});
+
+
+                //var nastyahash = PasswordManager.HashPassword("1234", out string nastyaSalt);
+                //Console.WriteLine(nastyahash + "   " + nastyaSalt);
+                //Console.WriteLine(PasswordManager.VerifyPassword("1234", nastyahash, nastyaSalt));
+                //userRepositoty.CreateUser(new User { Name = "Nastysha", Age = 20, Password = nastyahash, Salt = nastyaSalt });
+                #endregion
+
                 var userlist = userRepositoty.GetAllUsersQuery();
                 foreach (var user in userlist)
                 { 

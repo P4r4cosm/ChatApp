@@ -1,6 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text;
-
+using System.Text.Json;
+using ChatDb;
 class ClientTcpProgram
 {
     static async void SendMessageToServer(string message, NetworkStream stream)
@@ -41,13 +42,15 @@ class ClientTcpProgram
         {
             Console.Write("Введите логин: ");
             var login = Console.ReadLine();
-            //Console.Write("Введите пароль: ");
-            //var password = Console.ReadLine();
-            SendMessageToServer(login, stream);
+            Console.Write("Введите пароль: ");
+            var password = Console.ReadLine();
+            SendMessageToServer(login+" "+password, stream);
             var loginResult= ReadServerMessage(stream, tcpClient);
             Console.WriteLine(loginResult);
             if (loginResult == "Login Succesfull")
             {
+                var CurrentUser =JsonSerializer.Deserialize<User>(ReadServerMessage(stream, tcpClient));
+                Console.WriteLine(CurrentUser.ToString());
                 break;
             }
         }

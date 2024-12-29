@@ -2,7 +2,10 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-
+using System.Text.Json.Nodes;
+using ChatDb;
+using ServerTCP;
+using System.Text.Json;
 class ServerTcpProgram
 {
 
@@ -32,7 +35,9 @@ class ServerTcpProgram
         {
             server.Start();
             Console.WriteLine("Server is running");
-
+            var database = new ChatContext();
+            bool isAvailable = database.Database.CanConnect();
+            Console.WriteLine(isAvailable ? "Успешное подключение к базе" : "Не удалось подключиться");
             while (true)
             {
                 using var client = await server.AcceptTcpClientAsync();
@@ -43,16 +48,17 @@ class ServerTcpProgram
                 {
                     while (true)
                     {
-                        var login = ReadClientMessage(stream, client);
-                        if (login == "Paracosm")
+                        var authenticationString = ReadClientMessage(stream, client);
+                        var login = authenticationString.Split(' ')[0];
+                        var password = authenticationString.Split(" ")[1];
+                        if (AccountChecker.Verify(login, password, database,out User user))
                         {
                             SendMessageToClient("Login Succesfull", stream);
+                            SendMessageToClient(JsonSerializer.Serialize(user),stream);
                             break;
                         }
-                        else
-                        {
-                            SendMessageToClient($"Login Failed", stream);
-                        }
+                        else SendMessageToClient("Incorrect Login", stream);
+
                     }
                 }
                 catch (Exception ex)

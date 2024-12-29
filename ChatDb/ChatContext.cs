@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 namespace ChatDb
 {
-    internal class ChatContext: DbContext
+    public class ChatContext: DbContext
     {
         public DbSet<User> Users => Set<User>();
         public DbSet<Message> Messages => Set<Message>();
@@ -23,6 +23,12 @@ namespace ChatDb
                         .Build();
 
             optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+        }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<User>()
+                .HasIndex(u => u.Name)
+                .IsUnique();
         }
     }
 }
