@@ -9,12 +9,12 @@ using System.Text.Json;
 class ServerTcpProgram
 {
 
-    static async void SendMessageToClient(string message, NetworkStream stream)
+    static async Task SendMessageToClient(string message, NetworkStream stream)
     {
         var response = Encoding.UTF8.GetBytes($"{message}\n");
         await stream.WriteAsync(response);
     }
-    static string ReadClientMessage(NetworkStream stream, TcpClient client)
+    static async Task<string> ReadClientMessage(NetworkStream stream, TcpClient client)
     {
         var buffer = new List<byte>();
         int bytesRead;
@@ -28,6 +28,40 @@ class ServerTcpProgram
         var message = Encoding.UTF8.GetString(buffer.ToArray());
         return message;
     }
+    static async Task HandleClientAsync(TcpClient client, ChatContext database)
+    {
+        Console.WriteLine($"Входящее подключение: {client.Client.RemoteEndPoint}");
+        using var stream = client.GetStream();
+
+        try
+        {
+            while (true)
+            {
+                var authenticationString = await ReadClientMessage(stream, client);
+                var login = authenticationString.Split(' ')[0];
+                var password = authenticationString.Split(' ')[1];
+
+                if (AccountChecker.Verify(login, password, database, out User user))
+                {
+                    await SendMessageToClient("Login Succesfull", stream);
+                    await SendMessageToClient(JsonSerializer.Serialize(user), stream);
+                    break;
+                }
+                else
+                {
+                    await SendMessageToClient("Incorrect login", stream);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при обработке клиента: {ex.Message}");
+        }
+        finally
+        {
+            client.Close();
+        }
+    }
     static async Task Main()
     {
         var server = new TcpListener(IPEndPoint.Parse("127.0.0.1:8080"));
@@ -38,33 +72,11 @@ class ServerTcpProgram
             var database = new ChatContext();
             bool isAvailable = database.Database.CanConnect();
             Console.WriteLine(isAvailable ? "Успешное подключение к базе" : "Не удалось подключиться");
+
             while (true)
             {
-                using var client = await server.AcceptTcpClientAsync();
-                Console.WriteLine($"Входящее подключение: {client.Client.RemoteEndPoint}");
-                var stream = client.GetStream();
-
-                try
-                {
-                    while (true)
-                    {
-                        var authenticationString = ReadClientMessage(stream, client);
-                        var login = authenticationString.Split(' ')[0];
-                        var password = authenticationString.Split(" ")[1];
-                        if (AccountChecker.Verify(login, password, database,out User user))
-                        {
-                            SendMessageToClient("Login Succesfull", stream);
-                            SendMessageToClient(JsonSerializer.Serialize(user),stream);
-                            break;
-                        }
-                        else SendMessageToClient("Incorrect Login", stream);
-
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Ошибка при обработке клиента: {ex.Message}");
-                }
+                var client = await server.AcceptTcpClientAsync(); // Принимаем клиента
+                _ = Task.Run(() => HandleClientAsync(client, database)); // Запускаем обработку клиента в отдельной задаче
             }
         }
         finally

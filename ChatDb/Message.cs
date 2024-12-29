@@ -16,6 +16,9 @@ namespace ChatDb
         //Получатель
         public int RecipientId { get; set; }
         public User Recipient { get; set;} = null!; //навигационное свойство
+        public DateTime DepartureTime { get; set; } = DateTime.Now;
+
+        public bool IsViewed { get; set; }
 
         public override string ToString()
         {

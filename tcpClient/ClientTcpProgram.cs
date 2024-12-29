@@ -4,12 +4,12 @@ using System.Text.Json;
 using ChatDb;
 class ClientTcpProgram
 {
-    static async void SendMessageToServer(string message, NetworkStream stream)
+    static async Task SendMessageToServer(string message, NetworkStream stream)
     {
         var response = Encoding.UTF8.GetBytes($"{message}\n");
         await stream.WriteAsync(response);
     }
-    static string ReadServerMessage(NetworkStream stream, TcpClient client)
+    static async Task<string> ReadServerMessage(NetworkStream stream, TcpClient client)
     {
         var buffer = new List<byte>();
         int bytesRead;
@@ -44,12 +44,12 @@ class ClientTcpProgram
             var login = Console.ReadLine();
             Console.Write("Введите пароль: ");
             var password = Console.ReadLine();
-            SendMessageToServer(login+" "+password, stream);
-            var loginResult= ReadServerMessage(stream, tcpClient);
+            await SendMessageToServer(login+" "+password, stream);
+            var loginResult= ReadServerMessage(stream, tcpClient).Result;
             Console.WriteLine(loginResult);
             if (loginResult == "Login Succesfull")
             {
-                var CurrentUser =JsonSerializer.Deserialize<User>(ReadServerMessage(stream, tcpClient));
+                var CurrentUser =JsonSerializer.Deserialize<User>(ReadServerMessage(stream, tcpClient).Result);
                 Console.WriteLine(CurrentUser.ToString());
                 break;
             }
