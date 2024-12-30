@@ -22,7 +22,7 @@ namespace ChatDb
 
         public override string ToString()
         {
-            return $"{Text}\r\n\tОтправлено (кем): {Sender.Name}\t (кому): {Recipient.Name}";
+            return $"{Text}\r\n\tОтправлено (кем): {Sender.Name}\t (кому): {Recipient.Name} \t {DepartureTime}";
         }
         public override bool Equals(object? obj)
         {

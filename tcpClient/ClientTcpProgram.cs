@@ -4,6 +4,7 @@ using System.Text.Json;
 using ChatDb;
 class ClientTcpProgram
 {
+    static public User CurrentUser { get; set; }
     static async Task SendMessageToServer(string message, NetworkStream stream)
     {
         var response = Encoding.UTF8.GetBytes($"{message}\n");
@@ -44,49 +45,25 @@ class ClientTcpProgram
             var login = Console.ReadLine();
             Console.Write("Введите пароль: ");
             var password = Console.ReadLine();
-            await SendMessageToServer(login+" "+password, stream);
-            var loginResult= ReadServerMessage(stream, tcpClient).Result;
+            await SendMessageToServer(login + " " + password, stream);
+            var loginResult = ReadServerMessage(stream, tcpClient).Result;
             Console.WriteLine(loginResult);
             if (loginResult == "Login Succesfull")
             {
-                var CurrentUser =JsonSerializer.Deserialize<User>(ReadServerMessage(stream, tcpClient).Result);
+                CurrentUser = JsonSerializer.Deserialize<User>(ReadServerMessage(stream, tcpClient).Result);
                 Console.WriteLine(CurrentUser.ToString());
                 break;
             }
         }
         while (true)
         {
-            //Console.Write("Введите сообщение (END для завершения работы с сервером): ");
-            //var message = Console.ReadLine();
-
-            //if (message == "END")
-            //{
-            //    Console.WriteLine("Завершение работы...");
-            //    break;
-            //}
-
-            //// Отправка сообщения
-            //var data = Encoding.UTF8.GetBytes(message + "\n");
-            //await stream.WriteAsync(data);
-
-            // Получение ответа
-            //var buffer = new List<byte>();
-            //int bytesRead;
-
-            //while ((bytesRead = stream.ReadByte()) != -1 && bytesRead != '\n')
-            //{
-            //    buffer.Add((byte)bytesRead);
-            //}
-
-            //if (bytesRead == -1)
-            //{
-            //    Console.WriteLine("Сервер закрыл соединение");
-            //    break;
-            //}
-
-            //var response = Encoding.UTF8.GetString(buffer.ToArray());
-            //Console.WriteLine($"Ответ от сервера: {response}");
-
+            var message = CurrentUser.SendMessage("Привет Настя", 
+                new User {Id=4, Name= "Nastysha", Age=20,
+                    Password= "t7uRBuLxhoIxBRT/HqsodWVvMeS3D72y8NZdk3PeVO4=", Salt= "L8QeGR+DjLin1L2fXt5n+Q==" });
+            await SendMessageToServer(JsonSerializer.Serialize(message), stream);
+            await Task.Delay(1000);
+            break;
+            
         }
     }
 }

@@ -35,7 +35,7 @@ class ServerTcpProgram
 
         try
         {
-            while (true)
+            while (true) // цикл авторизации
             {
                 var authenticationString = await ReadClientMessage(stream, client);
                 var login = authenticationString.Split(' ')[0];
@@ -52,6 +52,14 @@ class ServerTcpProgram
                     await SendMessageToClient("Incorrect login", stream);
                 }
             }
+            while (true)
+            {
+                var message = JsonSerializer.Deserialize<Message>(ReadClientMessage(stream, client).Result);
+                Console.WriteLine(message);
+                
+                break;
+            }
+
         }
         catch (Exception ex)
         {
