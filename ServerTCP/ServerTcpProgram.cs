@@ -1,20 +1,22 @@
 ﻿using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Authentication;
 using System.Text;
-using System.Text.Json.Nodes;
+using System.Text.Json;
 using ChatDb;
 using ServerTCP;
-using System.Text.Json;
+using System.Net.Security;
 class ServerTcpProgram
 {
 
-    static async Task SendMessageToClient(string message, NetworkStream stream)
+    static async Task SendMessageToClient(string message, SslStream stream)
     {
         var response = Encoding.UTF8.GetBytes($"{message}\n");
         await stream.WriteAsync(response);
     }
-    static async Task<string> ReadClientMessage(NetworkStream stream, TcpClient client)
+    static async Task<string> ReadClientMessage(SslStream stream, TcpClient client)
     {
         var buffer = new List<byte>();
         int bytesRead;
@@ -28,33 +30,38 @@ class ServerTcpProgram
         var message = Encoding.UTF8.GetString(buffer.ToArray());
         return message;
     }
-    static async Task HandleClientAsync(TcpClient client, ChatContext database)
+    static async Task HandleClientAsync(TcpClient client, ChatContext database, X509Certificate2 serverCertificate)
     {
         Console.WriteLine($"Входящее подключение: {client.Client.RemoteEndPoint}");
-        using var stream = client.GetStream();
+        using var sslStream = new SslStream(client.GetStream());
 
         try
         {
+            // Аутентификация сервера
+            await sslStream.AuthenticateAsServerAsync(serverCertificate, clientCertificateRequired: false,
+                                                      checkCertificateRevocation: false);
+
+            Console.WriteLine("SSL handshake completed.");
             while (true) // цикл авторизации
             {
-                var authenticationString = await ReadClientMessage(stream, client);
+                var authenticationString = await ReadClientMessage(sslStream, client);
                 var login = authenticationString.Split(' ')[0];
                 var password = authenticationString.Split(' ')[1];
 
                 if (AccountChecker.Verify(login, password, database, out User user))
                 {
-                    await SendMessageToClient("Login Succesfull", stream);
-                    await SendMessageToClient(JsonSerializer.Serialize(user), stream);
+                    await SendMessageToClient("Login Succesfull", sslStream);
+                    await SendMessageToClient(JsonSerializer.Serialize(user), sslStream);
                     break;
                 }
                 else
                 {
-                    await SendMessageToClient("Incorrect login", stream);
+                    await SendMessageToClient("Incorrect login", sslStream);
                 }
             }
             while (true)
             {
-                var message = JsonSerializer.Deserialize<Message>(ReadClientMessage(stream, client).Result);
+                var message = JsonSerializer.Deserialize<Message>(ReadClientMessage(sslStream, client).Result);
                 Console.WriteLine(message);
                 
                 break;
@@ -81,10 +88,11 @@ class ServerTcpProgram
             bool isAvailable = database.Database.CanConnect();
             Console.WriteLine(isAvailable ? "Успешное подключение к базе" : "Не удалось подключиться");
 
+            var serverCertificate = new X509Certificate2("cerificate.pfx", "61323");
             while (true)
             {
                 var client = await server.AcceptTcpClientAsync(); // Принимаем клиента
-                _ = Task.Run(() => HandleClientAsync(client, database)); // Запускаем обработку клиента в отдельной задаче
+                _ = Task.Run(() => HandleClientAsync(client, database, serverCertificate)); // Запускаем обработку клиента в отдельной задаче
             }
         }
         finally

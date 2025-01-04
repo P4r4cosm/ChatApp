@@ -1,28 +1,40 @@
 ﻿using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using ChatDb;
+using System.Net.Security;
+
 class ClientTcpProgram
 {
     static public User CurrentUser { get; set; }
-    static async Task SendMessageToServer(string message, NetworkStream stream)
+
+    static async Task SendMessageToServer(string message, SslStream sslStream)
     {
         var response = Encoding.UTF8.GetBytes($"{message}\n");
-        await stream.WriteAsync(response);
+        await sslStream.WriteAsync(response);
     }
-    static async Task<string> ReadServerMessage(NetworkStream stream, TcpClient client)
+
+    static async Task<string> ReadServerMessage(SslStream sslStream)
     {
         var buffer = new List<byte>();
         int bytesRead;
 
         // Читаем данные до символа '\n'
-        while ((bytesRead = stream.ReadByte()) != -1 && bytesRead != '\n')
+        while ((bytesRead = sslStream.ReadByte()) != -1 && bytesRead != '\n')
         {
             buffer.Add((byte)bytesRead);
         }
+
         // Обработка сообщения
         var message = Encoding.UTF8.GetString(buffer.ToArray());
         return message;
+    }
+    public static bool ValidateServerCertificate(object sender, X509Certificate certificate,
+        X509Chain chain, SslPolicyErrors sslPolicyErrors)
+    {
+        return true;
     }
     static async Task Main()
     {
@@ -37,33 +49,57 @@ class ClientTcpProgram
             Console.WriteLine("Не удалось подключиться");
             return;
         }
-        var stream = tcpClient.GetStream();
 
-        while (true)
+        using SslStream sslStream = new SslStream(tcpClient.GetStream(), false,
+            new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+
+        try
         {
-            Console.Write("Введите логин: ");
-            var login = Console.ReadLine();
-            Console.Write("Введите пароль: ");
-            var password = Console.ReadLine();
-            await SendMessageToServer(login + " " + password, stream);
-            var loginResult = ReadServerMessage(stream, tcpClient).Result;
-            Console.WriteLine(loginResult);
-            if (loginResult == "Login Succesfull")
+            // Аутентификация клиента
+            await sslStream.AuthenticateAsClientAsync("localhost", null, checkCertificateRevocation: false);
+            Console.WriteLine("SSL handshake completed.");
+
+            while (true)
             {
-                CurrentUser = JsonSerializer.Deserialize<User>(ReadServerMessage(stream, tcpClient).Result);
-                Console.WriteLine(CurrentUser.ToString());
+                Console.Write("Введите логин: ");
+                var login = Console.ReadLine();
+                Console.Write("Введите пароль: ");
+                var password = Console.ReadLine();
+                await SendMessageToServer($"{login} {password}", sslStream);
+
+                var loginResult = await ReadServerMessage(sslStream);
+                Console.WriteLine(loginResult);
+
+                if (loginResult == "Login Succesfull")
+                {
+                    var userData = await ReadServerMessage(sslStream);
+                    CurrentUser = JsonSerializer.Deserialize<User>(userData);
+                    Console.WriteLine(CurrentUser.ToString());
+                    break;
+                }
+            }
+
+            while (true)
+            {
+                var message = CurrentUser.SendMessage("Привет Настя",
+                    new User
+                    {
+                        Id = 4,
+                        Name = "Nastysha",
+                        Age = 20,
+                        Password = "t7uRBuLxhoIxBRT/HqsodWVvMeS3D72y8NZdk3PeVO4=",
+                        Salt = "L8QeGR+DjLin1L2fXt5n+Q=="
+                    });
+
+                await SendMessageToServer(JsonSerializer.Serialize(message), sslStream);
+                await Task.Delay(1000);
                 break;
             }
         }
-        while (true)
+        catch (Exception ex)
         {
-            var message = CurrentUser.SendMessage("Привет Настя", 
-                new User {Id=4, Name= "Nastysha", Age=20,
-                    Password= "t7uRBuLxhoIxBRT/HqsodWVvMeS3D72y8NZdk3PeVO4=", Salt= "L8QeGR+DjLin1L2fXt5n+Q==" });
-            await SendMessageToServer(JsonSerializer.Serialize(message), stream);
-            await Task.Delay(1000);
-            break;
-            
+            Console.WriteLine($"Ошибка при работе с SSL: {ex.Message}");
         }
     }
+
 }
