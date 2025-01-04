@@ -18,8 +18,8 @@ namespace ChatDb
             //optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
             #endregion
             var config = new ConfigurationBuilder()
-                        .AddJsonFile("appsetting.json")
-                        .SetBasePath(Directory.GetCurrentDirectory())
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json")
                         .Build();
 
             optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"));

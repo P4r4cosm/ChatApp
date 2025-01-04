@@ -88,7 +88,11 @@ class ServerTcpProgram
             bool isAvailable = database.Database.CanConnect();
             Console.WriteLine(isAvailable ? "Успешное подключение к базе" : "Не удалось подключиться");
 
-            var serverCertificate = new X509Certificate2("cerificate.pfx", "61323");
+            var config = JsonDocument.Parse(File.ReadAllText("appsettings.json"));
+            var certPath = config.RootElement.GetProperty("Certificate").GetProperty("Path").GetString();
+            var certPassword = config.RootElement.GetProperty("Certificate").GetProperty("Password").GetString();
+            var serverCertificate = new X509Certificate2(certPath, certPassword);
+
             while (true)
             {
                 var client = await server.AcceptTcpClientAsync(); // Принимаем клиента
