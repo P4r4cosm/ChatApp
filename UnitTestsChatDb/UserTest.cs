@@ -26,7 +26,6 @@ namespace UnitTestsChatDb
             //Act
 
             var message = user.SendMessage("content", null);
-
         }
     }
 }

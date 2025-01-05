@@ -6,25 +6,18 @@ using System.Threading.Tasks;
 
 namespace ChatDb
 {
-    internal class UserRepository
+    public class UserRepository
     {
         private ChatContext db;
         public UserRepository(ChatContext db)
         {
             this.db = db;
         }
-        public void CreateUser(User user)
+        public bool CreateUser(User user)
         {
-            try
-            {
-                db.Users.Add(user);
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
+            db.Users.Add(user);
+            db.SaveChanges();
+            return true;
         }
         public void UpdateUser(User user, string name)
         {

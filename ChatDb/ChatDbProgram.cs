@@ -40,6 +40,8 @@ namespace ChatDb
                 {
                     Console.WriteLine(message);
                 }
+                userRepositoty.CreateUser(new User { Name = "Paracosm", Age = 0, 
+                    Password=PasswordManager.HashPassword("1111", out string salt),  Salt=salt});
             }
             #endregion
         }
