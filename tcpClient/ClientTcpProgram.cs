@@ -5,101 +5,85 @@ using System.Text;
 using System.Text.Json;
 using ChatDb;
 using System.Net.Security;
-
-class ClientTcpProgram
+namespace tcpClient
 {
-    static public User CurrentUser { get; set; }
-
-    static async Task SendMessageToServer(string message, SslStream sslStream)
+    class ClientTcpProgram
     {
-        var response = Encoding.UTF8.GetBytes($"{message}\n");
-        await sslStream.WriteAsync(response);
-    }
-
-    static async Task<string> ReadServerMessage(SslStream sslStream)
-    {
-        var buffer = new List<byte>();
-        int bytesRead;
-
-        // Читаем данные до символа '\n'
-        while ((bytesRead = sslStream.ReadByte()) != -1 && bytesRead != '\n')
+        static public User CurrentUser { get; set; }
+        public static bool ValidateServerCertificate(object sender, X509Certificate certificate,
+            X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            buffer.Add((byte)bytesRead);
+            return true;
         }
-
-        // Обработка сообщения
-        var message = Encoding.UTF8.GetString(buffer.ToArray());
-        return message;
-    }
-    public static bool ValidateServerCertificate(object sender, X509Certificate certificate,
-        X509Chain chain, SslPolicyErrors sslPolicyErrors)
-    {
-        return true;
-    }
-    static async Task Main()
-    {
-        using TcpClient tcpClient = new TcpClient();
-        Console.WriteLine("Клиент запущен");
-        await tcpClient.ConnectAsync("127.0.0.1", 8080);
-
-        if (tcpClient.Connected)
-            Console.WriteLine($"Подключение с {tcpClient.Client.RemoteEndPoint} установлено");
-        else
+        static async Task Main()
         {
-            Console.WriteLine("Не удалось подключиться");
-            return;
-        }
+            using TcpClient tcpClient = new TcpClient();
+            Console.WriteLine("Клиент запущен");
+            await tcpClient.ConnectAsync("127.0.0.1", 8080);
 
-        using SslStream sslStream = new SslStream(tcpClient.GetStream(), false,
-            new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
-
-        try
-        {
-            // Аутентификация клиента
-            await sslStream.AuthenticateAsClientAsync("localhost", null, checkCertificateRevocation: false);
-            Console.WriteLine("SSL handshake completed.");
-
-            while (true)
+            if (tcpClient.Connected)
+                Console.WriteLine($"Подключение с {tcpClient.Client.RemoteEndPoint} установлено");
+            else
             {
-                Console.Write("Введите логин: ");
-                var login = Console.ReadLine();
-                Console.Write("Введите пароль: ");
-                var password = Console.ReadLine();
-                await SendMessageToServer($"{login} {password}", sslStream);
+                Console.WriteLine("Не удалось подключиться");
+                return;
+            }
 
-                var loginResult = await ReadServerMessage(sslStream);
-                Console.WriteLine(loginResult);
+            using SslStream sslStream = new SslStream(tcpClient.GetStream(), false,
+                new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
 
-                if (loginResult == "Login Succesfull")
+            try
+            {
+                // Аутентификация клиента
+                await sslStream.AuthenticateAsClientAsync("localhost", null, checkCertificateRevocation: false);
+                Console.WriteLine("SSL handshake completed.");
+
+                
+                while (CurrentUser == null)//логин / создание аккаунта
                 {
-                    var userData = await ReadServerMessage(sslStream);
-                    CurrentUser = JsonSerializer.Deserialize<User>(userData);
-                    Console.WriteLine(CurrentUser.ToString());
+                    Console.WriteLine("Выберите вариант входа: \n " +
+                   "1) Вход в существующий аккаунт \n" +
+                   " 2) Создать новый аккаунт");
+
+                    var LoginOption = Console.ReadLine();
+                    switch (LoginOption)
+                    {
+                        case "1":
+                            CurrentUser = await UserAuthorization.Login(sslStream);
+                            break;
+                        case "2":
+                            CurrentUser = await UserAuthorization.CreateAccount(sslStream);
+                            break;
+                        default:
+                            Console.WriteLine($"Вариант {LoginOption} не поддерживается");
+                            break;
+                    }
+                }
+
+
+
+                while (true)
+                {
+                    var message = CurrentUser.SendMessage("Привет Настя",
+                        new User
+                        {
+                            Id = 4,
+                            Name = "Nastysha",
+                            Age = 20,
+                            Password = "t7uRBuLxhoIxBRT/HqsodWVvMeS3D72y8NZdk3PeVO4=",
+                            Salt = "L8QeGR+DjLin1L2fXt5n+Q=="
+                        });
+
+                    await ClientOperations.SendMessageToServer(JsonSerializer.Serialize(message), sslStream);
+                    await Task.Delay(1000);
                     break;
                 }
             }
-
-            while (true)
+            catch (Exception ex)
             {
-                var message = CurrentUser.SendMessage("Привет Настя",
-                    new User
-                    {
-                        Id = 4,
-                        Name = "Nastysha",
-                        Age = 20,
-                        Password = "t7uRBuLxhoIxBRT/HqsodWVvMeS3D72y8NZdk3PeVO4=",
-                        Salt = "L8QeGR+DjLin1L2fXt5n+Q=="
-                    });
-
-                await SendMessageToServer(JsonSerializer.Serialize(message), sslStream);
-                await Task.Delay(1000);
-                break;
+                Console.WriteLine($"Ошибка при работе с SSL: {ex.Message}");
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Ошибка при работе с SSL: {ex.Message}");
-        }
-    }
 
+    }
 }

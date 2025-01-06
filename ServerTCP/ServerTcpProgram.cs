@@ -11,25 +11,6 @@ using System.Net.Security;
 class ServerTcpProgram
 {
 
-    static async Task SendMessageToClient(string message, SslStream stream)
-    {
-        var response = Encoding.UTF8.GetBytes($"{message}\n");
-        await stream.WriteAsync(response);
-    }
-    static async Task<string> ReadClientMessage(SslStream stream, TcpClient client)
-    {
-        var buffer = new List<byte>();
-        int bytesRead;
-
-        // Читаем данные до символа '\n'
-        while ((bytesRead = stream.ReadByte()) != -1 && bytesRead != '\n')
-        {
-            buffer.Add((byte)bytesRead);
-        }
-        // Обработка сообщения
-        var message = Encoding.UTF8.GetString(buffer.ToArray());
-        return message;
-    }
     static async Task HandleClientAsync(TcpClient client, ChatContext database, X509Certificate2 serverCertificate)
     {
         Console.WriteLine($"Входящее подключение: {client.Client.RemoteEndPoint}");
@@ -42,26 +23,17 @@ class ServerTcpProgram
                                                       checkCertificateRevocation: false);
 
             Console.WriteLine("SSL handshake completed.");
-            while (true) // цикл авторизации
-            {
-                var authenticationString = await ReadClientMessage(sslStream, client);
-                var login = authenticationString.Split(' ')[0];
-                var password = authenticationString.Split(' ')[1];
-
-                if (AccountChecker.Verify(login, password, database, out User user))
-                {
-                    await SendMessageToClient("Login Succesfull", sslStream);
-                    await SendMessageToClient(JsonSerializer.Serialize(user), sslStream);
-                    break;
-                }
-                else
-                {
-                    await SendMessageToClient("Incorrect login", sslStream);
-                }
-            }
             while (true)
             {
-                var message = JsonSerializer.Deserialize<Message>(ReadClientMessage(sslStream, client).Result);
+                var loginOption = await ServerOperations.ReadClientMessage(sslStream, client);
+                var accountLoginner = new AccountLoginner(client, database, sslStream);
+                if (await accountLoginner.Authorization(loginOption)) break;
+            }
+
+            // чтение сообщения
+            while (true)
+            {
+                var message = JsonSerializer.Deserialize<Message>(ServerOperations.ReadClientMessage(sslStream, client).Result);
                 Console.WriteLine(message);
                 
                 break;
