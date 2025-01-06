@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using ChatDb;
 using System.Net.Security;
+using tcpClient.ClientOperations;
 namespace tcpClient
 {
     class ClientTcpProgram
@@ -38,46 +39,48 @@ namespace tcpClient
                 await sslStream.AuthenticateAsClientAsync("localhost", null, checkCertificateRevocation: false);
                 Console.WriteLine("SSL handshake completed.");
 
-                
-                while (CurrentUser == null)//логин / создание аккаунта
-                {
-                    Console.WriteLine("Выберите вариант входа: \n " +
-                   "1) Вход в существующий аккаунт \n" +
-                   " 2) Создать новый аккаунт");
+                Console.WriteLine("Выберите вариант входа: \n " +
+                 "1) Вход в существующий аккаунт \n" +
+                 " 2) Создать новый аккаунт");
 
-                    var LoginOption = Console.ReadLine();
+                var LoginOption = Console.ReadLine();
+                var login = new LoginOperationClient(sslStream);
+                while (CurrentUser == null)///логин / создание аккаунта
+                {
                     switch (LoginOption)
                     {
                         case "1":
-                            CurrentUser = await UserAuthorization.Login(sslStream);
+                            CurrentUser = await login.RunOperation();
+                            Console.WriteLine(CurrentUser.ToString());
                             break;
                         case "2":
-                            CurrentUser = await UserAuthorization.CreateAccount(sslStream);
+                            //CurrentUser = await userauthorization.createaccount(sslstream);
                             break;
                         default:
-                            Console.WriteLine($"Вариант {LoginOption} не поддерживается");
+                            Console.WriteLine($"вариант {LoginOption} не поддерживается");
                             break;
                     }
                 }
-
-
-
-                while (true)
+                while(true)
                 {
-                    var message = CurrentUser.SendMessage("Привет Настя",
-                        new User
-                        {
-                            Id = 4,
-                            Name = "Nastysha",
-                            Age = 20,
-                            Password = "t7uRBuLxhoIxBRT/HqsodWVvMeS3D72y8NZdk3PeVO4=",
-                            Salt = "L8QeGR+DjLin1L2fXt5n+Q=="
-                        });
 
-                    await ClientOperations.SendMessageToServer(JsonSerializer.Serialize(message), sslStream);
-                    await Task.Delay(1000);
-                    break;
                 }
+                //while (true)
+                //{
+                //    var message = CurrentUser.SendMessage("Привет Настя",
+                //        new User
+                //        {
+                //            Id = 4,
+                //            Name = "Nastysha",
+                //            Age = 20,
+                //            Password = "t7uRBuLxhoIxBRT/HqsodWVvMeS3D72y8NZdk3PeVO4=",
+                //            Salt = "L8QeGR+DjLin1L2fXt5n+Q=="
+                //        });
+
+                //    await SecureCommunication.SendMessageToServer(JsonSerializer.Serialize(message), sslStream);
+                //    await Task.Delay(1000);
+                //    break;
+                //}
             }
             catch (Exception ex)
             {

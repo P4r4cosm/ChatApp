@@ -2,29 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Security;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerTCP
+namespace tcpClient
 {
-    public class ServerOperations
+    public static class SecureCommunication
     {
-        public static async Task SendMessageToClient(string message, SslStream stream)
+        public static async Task SendMessageToServer(string message, SslStream sslStream)
         {
             var response = Encoding.UTF8.GetBytes($"{message}\n");
-            await stream.WriteAsync(response);
+            await sslStream.WriteAsync(response);
         }
-        public static async Task<string> ReadClientMessage(SslStream stream, TcpClient client)
+
+        public static async Task<string> ReadServerMessage(SslStream sslStream)
         {
             var buffer = new List<byte>();
             int bytesRead;
 
             // Читаем данные до символа '\n'
-            while ((bytesRead = stream.ReadByte()) != -1 && bytesRead != '\n')
+            while ((bytesRead = sslStream.ReadByte()) != -1 && bytesRead != '\n')
             {
                 buffer.Add((byte)bytesRead);
             }
+
             // Обработка сообщения
             var message = Encoding.UTF8.GetString(buffer.ToArray());
             return message;

@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using ChatDb;
 using ServerTCP;
+using ServerTCP.ServerOperations;
 using System.Net.Security;
 class ServerTcpProgram
 {
@@ -15,7 +16,6 @@ class ServerTcpProgram
     {
         Console.WriteLine($"Входящее подключение: {client.Client.RemoteEndPoint}");
         using var sslStream = new SslStream(client.GetStream());
-
         try
         {
             // Аутентификация сервера
@@ -23,20 +23,27 @@ class ServerTcpProgram
                                                       checkCertificateRevocation: false);
 
             Console.WriteLine("SSL handshake completed.");
-            while (true)
+            User CurrentUser=null;
+            while (CurrentUser==null)
             {
-                var loginOption = await ServerOperations.ReadClientMessage(sslStream, client);
-                var accountLoginner = new AccountLoginner(client, database, sslStream);
-                if (await accountLoginner.Authorization(loginOption)) break;
+                var response = JsonSerializer.Deserialize<Dictionary<string, object>>
+                    (await SecureCommunication.ReadClientMessage(sslStream));
+                if (response["operation"].ToString() =="Login")
+                {
+                    var loginOperation = new LoginOperationServer();
+                    var data = JsonSerializer.Deserialize<Dictionary<string, object>>(response["data"].ToString());
+                    Console.WriteLine(loginOperation.Execute(sslStream,data,database).Result.ToString());
+                    break;
+                }
             }
+            
 
             // чтение сообщения
             while (true)
             {
-                var message = JsonSerializer.Deserialize<Message>(ServerOperations.ReadClientMessage(sslStream, client).Result);
-                Console.WriteLine(message);
-                
-                break;
+                //var message = JsonSerializer.Deserialize<Message>(await SecureCommunication.ReadClientMessage(sslStream));
+                //Console.WriteLine(message);
+                //break;
             }
 
         }
@@ -51,6 +58,7 @@ class ServerTcpProgram
     }
     static async Task Main()
     {
+
         var server = new TcpListener(IPEndPoint.Parse("127.0.0.1:8080"));
         try
         {
@@ -59,7 +67,6 @@ class ServerTcpProgram
             var database = new ChatContext();
             bool isAvailable = database.Database.CanConnect();
             Console.WriteLine(isAvailable ? "Успешное подключение к базе" : "Не удалось подключиться");
-
             var config = JsonDocument.Parse(File.ReadAllText("appsettings.json"));
             var certPath = config.RootElement.GetProperty("Certificate").GetProperty("Path").GetString();
             var certPassword = config.RootElement.GetProperty("Certificate").GetProperty("Password").GetString();

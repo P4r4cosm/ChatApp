@@ -30,19 +30,19 @@ namespace ServerTCP
         {
             while (true) // цикл авторизации
             {
-                var authenticationString = await ServerOperations.ReadClientMessage(SslStream, Client);
+                var authenticationString = await SecureCommunication.ReadClientMessage(SslStream);
                 var login = authenticationString.Split(' ')[0];
                 var password = authenticationString.Split(' ')[1];
 
                 if (AccountChecker.Verify(login, password, Database, out User user))
                 {
-                    await ServerOperations.SendMessageToClient("Login Successfull", SslStream);
-                    await ServerOperations.SendMessageToClient(JsonSerializer.Serialize(user), SslStream);
+                    await SecureCommunication.SendMessageToClient("Login Successfull", SslStream);
+                    await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(user), SslStream);
                     return true;
                 }
                 else
                 {
-                    await ServerOperations.SendMessageToClient("Incorrect login", SslStream);
+                    await SecureCommunication.SendMessageToClient("Incorrect login", SslStream);
                     return false;
                 }
             }
@@ -51,7 +51,7 @@ namespace ServerTCP
         {
             while (true)
             {
-                var userString = await ServerOperations.ReadClientMessage(SslStream, Client);
+                var userString = await SecureCommunication.ReadClientMessage(SslStream);
                 var name = userString.Split(" ")[0];
                 var password = PasswordManager.HashPassword(userString.Split(" ")[1], out string salt);
                 var age = int.Parse(userString.Split(' ')[2]);
@@ -60,16 +60,16 @@ namespace ServerTCP
                 {
                     if (UserRepository.CreateUser(user))
                     {
-                        await ServerOperations.SendMessageToClient("Account Created", SslStream);
-                        await ServerOperations.SendMessageToClient(JsonSerializer.Serialize(user), SslStream);
+                        await SecureCommunication.SendMessageToClient("Account Created", SslStream);
+                        await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(user), SslStream);
                         return true;
                     }
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
                 {
                     Console.WriteLine(ex.Message);
-                    await ServerOperations.SendMessageToClient("Error", SslStream);
-                    await ServerOperations.SendMessageToClient(ex.Message, SslStream);
+                    await SecureCommunication.SendMessageToClient("Error", SslStream);
+                    await SecureCommunication.SendMessageToClient(ex.Message, SslStream);
                     return false;
                 }
             }
