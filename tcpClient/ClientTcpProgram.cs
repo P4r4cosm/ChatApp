@@ -38,35 +38,52 @@ namespace tcpClient
                 // Аутентификация клиента
                 await sslStream.AuthenticateAsClientAsync("localhost", null, checkCertificateRevocation: false);
                 Console.WriteLine("SSL handshake completed.");
-                var flag = true;
+                
                 bool isAccountExists = false;
-                Console.WriteLine("Выберите вариант входа: \n " +
-                     "1) Вход в существующий аккаунт \n" +
-                     " 2) Создать новый аккаунт");
-                while (flag)
+                while (CurrentUser==null)
                 {
-                    var LoginOption = Console.ReadLine();
-                    switch (LoginOption)
+                    var flag = true;
+                    Console.WriteLine("Выберите вариант входа: \n" +
+                         "1) Вход в существующий аккаунт \n" +
+                         "2) Создать новый аккаунт");
+                    while (flag)
                     {
-                        case "1":
-                            isAccountExists = true;
-                            flag = false;
-                            break;
-                        case "2":
-                            isAccountExists = false;
-                            flag = false;
-                            break;
-                        default:
-                            Console.WriteLine("Неверное значение");
-                            continue;
+                        var LoginOption = Console.ReadLine();
+                        switch (LoginOption)
+                        {
+                            case "1":
+                                isAccountExists = true;
+                                flag = false;
+                                break;
+                            case "2":
+                                isAccountExists = false;
+                                flag = false;
+                                break;
+                            default:
+                                Console.WriteLine("Неверное значение");
+                                continue;
+                        }
+                    }
+                    
+                    var login = new LoginOperationClient(sslStream, isAccountExists);
+                    while (true)
+                    {
+                       
+                        CurrentUser = await login.RunOperation();
+                        if (CurrentUser == null)
+                        {
+                            Console.WriteLine("Нажмите Esc чтобы вернуться назад или любую другую клавишу для продолжения.");
+                            var key = Console.ReadKey(intercept: true); // Чтение клавиши без отображения символа
+                            if (key.Key == ConsoleKey.Escape) // Проверка на Esc
+                            {
+                                break; // Выход из внутреннего цикла
+                            }
+                        }
+                        else break;
+
                     }
                 }
-                var login = new LoginOperationClient(sslStream, isAccountExists);
-                while (CurrentUser == null)
-                {
-                    
-                    CurrentUser = await login.RunOperation();
-                }
+                
                 Console.WriteLine(CurrentUser.ToString());
                 //while (true)
                 //{
