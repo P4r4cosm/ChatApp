@@ -1,4 +1,4 @@
-﻿using ChatDb;
+﻿
 using ServerTCP.ServerOperations;
 using System;
 using System.Collections.Generic;
@@ -7,20 +7,22 @@ using System.Net.Security;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using tcpClient.User;
 
 namespace tcpClient.ClientOperations
 {
     public class LoginOperationClient : AbstractOperationClient
     {
-        public override string Name { get; } = "Login";
+        public override string Name { get; protected set; } 
         public override Dictionary<string, object> Data { get; }
         public override SslStream SslStream { get; }
-        public LoginOperationClient(SslStream sslStream)
+        public LoginOperationClient(SslStream sslStream, bool isExists)
         {
             SslStream = sslStream;
             Data = new Dictionary<string, object>();
+            Name = isExists ? "Login" : "CreateAccount";
         }
-        public override async Task<User> RunOperation()
+        public override async Task<PublicUser> RunOperation()
         {
             Data.Clear();
             Console.Write("Введите логин: ");
@@ -42,7 +44,7 @@ namespace tcpClient.ClientOperations
             if (loginResult?["responseAnswer"].ToString()== $"{Name} OK")
             {
                 Console.WriteLine(loginResult["responseAnswer"].ToString());
-                var user = JsonSerializer.Deserialize<User>(loginResult["data"].ToString());
+                var user = JsonSerializer.Deserialize<PublicUser>(loginResult["data"].ToString());
                 return user;
             }
             else

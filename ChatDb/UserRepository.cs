@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,9 +16,17 @@ namespace ChatDb
         }
         public bool CreateUser(User user)
         {
-            db.Users.Add(user);
-            db.SaveChanges();
-            return true;
+            try
+            {
+                db.Users.Add(user);
+                db.SaveChanges();
+                return true;
+            }
+            catch (DbUpdateException ex)
+            {
+                db.ChangeTracker.Clear();
+                throw;
+            }
         }
         public void UpdateUser(User user, string name)
         {

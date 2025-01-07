@@ -3,14 +3,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
-using ChatDb;
 using System.Net.Security;
 using tcpClient.ClientOperations;
+using tcpClient.User;
 namespace tcpClient
 {
     class ClientTcpProgram
     {
-        static public User CurrentUser { get; set; }
+        static public PublicUser CurrentUser { get; set; }
         public static bool ValidateServerCertificate(object sender, X509Certificate certificate,
             X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
@@ -38,33 +38,36 @@ namespace tcpClient
                 // Аутентификация клиента
                 await sslStream.AuthenticateAsClientAsync("localhost", null, checkCertificateRevocation: false);
                 Console.WriteLine("SSL handshake completed.");
-
+                var flag = true;
+                bool isAccountExists = false;
                 Console.WriteLine("Выберите вариант входа: \n " +
-                 "1) Вход в существующий аккаунт \n" +
-                 " 2) Создать новый аккаунт");
-
-                var LoginOption = Console.ReadLine();
-                var login = new LoginOperationClient(sslStream);
-                while (CurrentUser == null)///логин / создание аккаунта
+                     "1) Вход в существующий аккаунт \n" +
+                     " 2) Создать новый аккаунт");
+                while (flag)
                 {
+                    var LoginOption = Console.ReadLine();
                     switch (LoginOption)
                     {
                         case "1":
-                            CurrentUser = await login.RunOperation();
-                            Console.WriteLine(CurrentUser.ToString());
+                            isAccountExists = true;
+                            flag = false;
                             break;
                         case "2":
-                            //CurrentUser = await userauthorization.createaccount(sslstream);
+                            isAccountExists = false;
+                            flag = false;
                             break;
                         default:
-                            Console.WriteLine($"вариант {LoginOption} не поддерживается");
-                            break;
+                            Console.WriteLine("Неверное значение");
+                            continue;
                     }
                 }
-                while(true)
+                var login = new LoginOperationClient(sslStream, isAccountExists);
+                while (CurrentUser == null)
                 {
-
+                    
+                    CurrentUser = await login.RunOperation();
                 }
+                Console.WriteLine(CurrentUser.ToString());
                 //while (true)
                 //{
                 //    var message = CurrentUser.SendMessage("Привет Настя",

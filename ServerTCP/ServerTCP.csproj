@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ChatDb\ChatDb.csproj" />
+    <ProjectReference Include="..\tcpClient\tcpClient.csproj" />
   </ItemGroup>
 
 </Project>

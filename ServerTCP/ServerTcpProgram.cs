@@ -32,8 +32,15 @@ class ServerTcpProgram
                 {
                     var loginOperation = new LoginOperationServer();
                     var data = JsonSerializer.Deserialize<Dictionary<string, object>>(response["data"].ToString());
-                    Console.WriteLine(loginOperation.Execute(sslStream,data,database).Result.ToString());
-                    break;
+                    CurrentUser= await loginOperation.Execute(sslStream,data,database);
+                    Console.WriteLine(CurrentUser?.ToString());
+                }
+                if (response["operation"].ToString()=="CreateAccount")
+                {
+                    var operation = new CreateAccountOperation();
+                    var data = JsonSerializer.Deserialize<Dictionary<string, object>>(response["data"].ToString());
+                    CurrentUser = await operation.Execute(sslStream, data, database);
+                    Console.WriteLine(CurrentUser?.ToString());
                 }
             }
             

@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-
+using tcpClient.User;
 namespace ServerTCP.ServerOperations
 {
     internal class LoginOperationServer : AbstractOperationServer
@@ -21,7 +21,7 @@ namespace ServerTCP.ServerOperations
                 var response = new
                 {
                     responseAnswer = $"{Name} OK",
-                    data = user,
+                    data = UserToPublicUserConverter.Convert(user),
                 };
                 await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), SslStream);
                 return user;
