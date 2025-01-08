@@ -14,7 +14,7 @@ namespace ServerTCP.ServerOperations
         public override Dictionary<string, object> Data { get; set; }
         public override Task<bool> Execute(SslStream stream, ChatContext database)
         {
-            
+            return Task.FromResult(true);
         }
     }
 }

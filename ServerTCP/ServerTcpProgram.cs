@@ -24,12 +24,12 @@ class ServerTcpProgram
                                                       checkCertificateRevocation: false);
 
             Console.WriteLine("SSL handshake completed.");
-            User CurrentUser=null;
 
+            User CurrentUser = null;
             OperationFactory.RegisterOperation<User>("Login", typeof(LoginOperationServer));
             OperationFactory.RegisterOperation<User>("CreateAccount", typeof(CreateAccountOperation));
-           
-            while (CurrentUser==null)
+
+            while (CurrentUser == null)
             {
                 var operation = OperationFactory.CreateOperation<User>(await SecureCommunication.ReadClientMessage(sslStream));
                 CurrentUser = await operation.Execute(sslStream, database);
@@ -64,6 +64,19 @@ class ServerTcpProgram
             var certPath = config.RootElement.GetProperty("Certificate").GetProperty("Path").GetString();
             var certPassword = config.RootElement.GetProperty("Certificate").GetProperty("Password").GetString();
             var serverCertificate = new X509Certificate2(certPath, certPassword);
+
+
+            var messageRepostory = new MessageRepository(database);
+            var userRepository = new UserRepository(database);
+            var paracosm = userRepository.GetAllUsersQuery().Where(u => u.Name == "Paracosm").FirstOrDefault(); //получаем пользователя
+            var nastysha = userRepository.GetAllUsersQuery().Where(u => u.Name == "Nastysha").FirstOrDefault();
+            var message = paracosm.SendMessage("Hello World", nastysha); //создаём сообщение
+
+            messageRepostory.CreateMessage(message); //сохраняем в базу
+            var chat = new Chat(paracosm, nastysha, messageRepostory);
+            Console.WriteLine(chat.ToString());
+
+
 
             while (true)
             {

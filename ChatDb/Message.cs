@@ -16,13 +16,14 @@ namespace ChatDb
         //Получатель
         public int RecipientId { get; set; }
         public User Recipient { get; set;} = null!; //навигационное свойство
-        public DateTime DepartureTime { get; set; } = DateTime.Now;
+        public DateTime DepartureTime { get; set; } = DateTime.UtcNow;
 
         public bool IsViewed { get; set; }
 
         public override string ToString()
         {
-            return $"{Text}\r\n\tОтправлено (кем): {Sender.Name}\t (кому): {Recipient.Name} \t {DepartureTime}";
+            return $"{Text}\r\n\tОтправлено (кем): {Sender.Name}\t (кому): {Recipient.Name}" +
+                $" \t {DepartureTime.ToLocalTime()}";
         }
         public override bool Equals(object? obj)
         {

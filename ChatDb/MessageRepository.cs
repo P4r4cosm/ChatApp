@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ChatDb
 {
-    internal class MessageRepository
+    public class MessageRepository
     {
         private ChatContext db;
         public MessageRepository(ChatContext db)
@@ -57,6 +57,19 @@ namespace ChatDb
             try
             {
                 return db.Messages.Select(m => m);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Enumerable.Empty<Message>().AsQueryable();
+            }
+        }
+        public IQueryable<Message> GetMessagesBetweenUsers(User user1, User user2) //возвращаем все сообщения между двумя пользователями
+        {
+            try
+            {
+                return db.Messages.Where(m => (m.Sender == user1 && m.Recipient == user2)|| 
+                (m.Sender == user2 && m.Recipient == user1));
             }
             catch (Exception ex)
             {
