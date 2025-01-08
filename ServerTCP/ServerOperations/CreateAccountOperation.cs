@@ -11,14 +11,15 @@ using ChatDb;
 using System.ComponentModel.DataAnnotations;
 namespace ServerTCP.ServerOperations
 {
-    internal class CreateAccountOperation : AbstractOperationServer
+    internal class CreateAccountOperation : AbstractOperationServer<User>
     {
         public override string Name { get; } = "CreateAccount";
-        public override async Task<User> Execute(SslStream SslStream, Dictionary<string, object> data,
+        public override Dictionary<string, object> Data { get; set; }
+        public override async Task<User> Execute(SslStream SslStream, 
             ChatContext Database)
         {
-            var name = data["login"].ToString();
-            var password = data ["password"].ToString();
+            var name = Data["login"].ToString();
+            var password = Data["password"].ToString();
             var cryptedPassword = PasswordManager.HashPassword(password, out string salt);
             var user = new User { Name = name, Password = cryptedPassword, Salt = salt};
 

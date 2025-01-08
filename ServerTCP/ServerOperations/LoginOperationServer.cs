@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 using tcpClient.User;
 namespace ServerTCP.ServerOperations
 {
-    internal class LoginOperationServer : AbstractOperationServer
+    internal class LoginOperationServer : AbstractOperationServer<User>
     {
         public override string Name { get; } = "Login";
-        public override async Task<User> Execute(SslStream SslStream, Dictionary<string, object> data,
-            ChatContext Database)
+        public override Dictionary<string, object> Data { get;  set; }
+        public override async Task<User> Execute(SslStream SslStream, ChatContext Database)
         {
-            if (AccountChecker.Verify(data["login"].ToString(), data["password"].ToString(), Database, out User user))
+            if (AccountChecker.Verify(Data["login"].ToString(), Data["password"].ToString(), Database, out User user))
             {
                 var response = new
                 {

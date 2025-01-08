@@ -9,6 +9,7 @@ using ChatDb;
 using ServerTCP;
 using ServerTCP.ServerOperations;
 using System.Net.Security;
+using ServerTCP.OperationFactories;
 class ServerTcpProgram
 {
 
@@ -24,34 +25,19 @@ class ServerTcpProgram
 
             Console.WriteLine("SSL handshake completed.");
             User CurrentUser=null;
+
+            OperationFactory.RegisterOperation<User>("Login", typeof(LoginOperationServer));
+            OperationFactory.RegisterOperation<User>("CreateAccount", typeof(CreateAccountOperation));
+           
             while (CurrentUser==null)
             {
-                var response = JsonSerializer.Deserialize<Dictionary<string, object>>
-                    (await SecureCommunication.ReadClientMessage(sslStream));
-                if (response["operation"].ToString() =="Login")
-                {
-                    var loginOperation = new LoginOperationServer();
-                    var data = JsonSerializer.Deserialize<Dictionary<string, object>>(response["data"].ToString());
-                    CurrentUser= await loginOperation.Execute(sslStream,data,database);
-                    Console.WriteLine(CurrentUser?.ToString());
-                }
-                if (response["operation"].ToString()=="CreateAccount")
-                {
-                    var operation = new CreateAccountOperation();
-                    var data = JsonSerializer.Deserialize<Dictionary<string, object>>(response["data"].ToString());
-                    CurrentUser = await operation.Execute(sslStream, data, database);
-                    Console.WriteLine(CurrentUser?.ToString());
-                }
+                var operation = OperationFactory.CreateOperation<User>(await SecureCommunication.ReadClientMessage(sslStream));
+                CurrentUser = await operation.Execute(sslStream, database);
             }
-            
+            Console.WriteLine($"Клиент авторизован: {CurrentUser.ToString()}");
 
-            // чтение сообщения
-            while (true)
-            {
-                //var message = JsonSerializer.Deserialize<Message>(await SecureCommunication.ReadClientMessage(sslStream));
-                //Console.WriteLine(message);
-                //break;
-            }
+
+
 
         }
         catch (Exception ex)
@@ -89,5 +75,10 @@ class ServerTcpProgram
         {
             server.Stop();
         }
+    }
+
+    public void Method()
+    {
+        throw new System.NotImplementedException();
     }
 }

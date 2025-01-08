@@ -38,7 +38,7 @@ namespace tcpClient
                 // Аутентификация клиента
                 await sslStream.AuthenticateAsClientAsync("localhost", null, checkCertificateRevocation: false);
                 Console.WriteLine("SSL handshake completed.");
-                
+                #region login
                 bool isAccountExists = false;
                 while (CurrentUser==null)
                 {
@@ -83,8 +83,10 @@ namespace tcpClient
 
                     }
                 }
-                
                 Console.WriteLine(CurrentUser.ToString());
+                #endregion
+
+
                 //while (true)
                 //{
                 //    var message = CurrentUser.SendMessage("Привет Настя",
