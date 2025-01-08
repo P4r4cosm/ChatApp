@@ -18,7 +18,6 @@ namespace ServerTCP
             var sortedMessages = Messages.OrderByDescending(m => m.DepartureTime);
             return sortedMessages.Take(PageSize);
         }
-
         public Chat(User user1, User user2, MessageRepository messageRepository)
         {
             User1 = user1;

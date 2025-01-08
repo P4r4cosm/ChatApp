@@ -21,7 +21,7 @@ namespace ServerTCP.ServerOperations
                 var response = new
                 {
                     responseAnswer = $"{Name} OK",
-                    data = UserToPublicUserConverter.Convert(user),
+                    data = PublicConverter.Convert(user),
                 };
                 await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), SslStream);
                 return user;
