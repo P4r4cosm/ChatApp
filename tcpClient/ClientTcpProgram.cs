@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Net.Security;
 using tcpClient.ClientOperations;
-using tcpClient.User;
+using tcpClient.PublicClasses;
 namespace tcpClient
 {
     class ClientTcpProgram
@@ -86,23 +86,15 @@ namespace tcpClient
                 Console.WriteLine(CurrentUser.ToString());
                 #endregion
 
-
-                //while (true)
-                //{
-                //    var message = CurrentUser.SendMessage("Привет Настя",
-                //        new User
-                //        {
-                //            Id = 4,
-                //            Name = "Nastysha",
-                //            Age = 20,
-                //            Password = "t7uRBuLxhoIxBRT/HqsodWVvMeS3D72y8NZdk3PeVO4=",
-                //            Salt = "L8QeGR+DjLin1L2fXt5n+Q=="
-                //        });
-
-                //    await SecureCommunication.SendMessageToServer(JsonSerializer.Serialize(message), sslStream);
-                //    await Task.Delay(1000);
-                //    break;
-                //}
+                var data = JsonSerializer.Deserialize<Dictionary<string, object>>
+                    (await SecureCommunication.ReadServerMessage(sslStream));
+                Console.WriteLine(data["responseAnswer"].ToString());
+                var publicChatList = JsonSerializer.Deserialize<List<PublicChat>>(data["data"].ToString());
+                foreach (var chat in publicChatList)
+                {
+                    Console.WriteLine(chat.ToString());
+                }
+                while (true);
             }
             catch (Exception ex)
             {

@@ -11,7 +11,7 @@ using ChatDb;
 using System.ComponentModel.DataAnnotations;
 namespace ServerTCP.ServerOperations
 {
-    internal class CreateAccountOperation : AbstractOperationServer<User>
+    internal class CreateAccountOperation : LoginAbstractOperation<User>
     {
         public override string Name { get; } = "CreateAccount";
         public override Dictionary<string, object> Data { get; set; }

@@ -1,6 +1,8 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics.CodeAnalysis;
 namespace ChatDb
 {
     class ChatDbProgram
@@ -14,34 +16,34 @@ namespace ChatDb
                 Console.WriteLine(isAvailable ? "Успешное подключение к базе" : "Не удалось подключиться");
                 var messageRepository = new MessageRepository(db);
                 var userRepositoty = new UserRepository(db);
-                #region addusers
-                //var paracosmHash = PasswordManager.HashPassword("61323", out string salt);
-                //Console.WriteLine(paracosmHash + "   "+ salt);
-                //Console.WriteLine(PasswordManager.VerifyPassword("61323", paracosmHash, salt));
-                //userRepositoty.CreateUser(new User { Name = "Paracosm", Age = 20, Password=paracosmHash, Salt=salt});
+                var paracosm = db.Users.FirstOrDefault(u => u.Name == "Paracosm");
+                var nastysha = db.Users.FirstOrDefault(u => u.Name == "Nastysha");
 
+                var paracosmik = db.Users.FirstOrDefault(u => u.Name == "Paracosmik");
+                messageRepository.CreateMessage(paracosmik.SendMessage($"Здарова еблан", paracosm));
+                var random = new Random();
+                //for (int i = 0; i < 20; i++)
+                //{
+                //    var item = random.Next();
+                //    if (item % 3 == 0)
+                //    {
+                //        messageRepository.CreateMessage(paracosm.SendMessage($"text message № {i} {item}", nastysha));
+                //    }
+                //    else if (item%3 == 1)
+                //    {
+                //        messageRepository.CreateMessage(nastysha.SendMessage($"text message № {i} {item}", paracosm));
+                //    }
+                //    else
+                //    {
+                //        messageRepository.CreateMessage(paracosm.SendMessage($"text message № {i} {item}", paracosm));
+                //    }
+                //}
 
-                //var nastyahash = PasswordManager.HashPassword("1234", out string nastyaSalt);
-                //Console.WriteLine(nastyahash + "   " + nastyaSalt);
-                //Console.WriteLine(PasswordManager.VerifyPassword("1234", nastyahash, nastyaSalt));
-                //userRepositoty.CreateUser(new User { Name = "Nastysha", Age = 20, Password = nastyahash, Salt = nastyaSalt });
-                #endregion
-
-                var userlist = userRepositoty.GetAllUsersQuery();
-                foreach (var user in userlist)
-                { 
-                    Console.WriteLine(user);
-                }
-                var paracosm = userlist.FirstOrDefault();
-                //var message = paracosm?.SendMessage("Здарова, Настюха, с зачётом тебя!", userlist?.Where(u=>u.Name=="Nastya")?.FirstOrDefault());
-                //messageRepository.CreateMessage(message);
-                var messagelist = messageRepository.GetAllMessagesQuery();
-                foreach (var message in messagelist)
+                var chats = messageRepository.GetAllChatsUserNameQuery(paracosm);
+                foreach (var chat in chats)
                 {
-                    Console.WriteLine(message);
+                    Console.WriteLine(chat);
                 }
-                userRepositoty.CreateUser(new User { Name = "Paracosm", Age = 0, 
-                    Password=PasswordManager.HashPassword("1111", out string salt),  Salt=salt});
             }
             #endregion
         }

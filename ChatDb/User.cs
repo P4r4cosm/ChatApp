@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
@@ -25,6 +26,11 @@ namespace ChatDb
         {
             if (recipient is null) throw new ArgumentNullException(nameof(recipient));
             return new Message { Text = content, Recipient=recipient, Sender=this};
+        }
+        public override bool Equals(object? obj)
+        {
+            if (obj is not User other) return false;
+            return Id == other.Id && Name == other.Name;
         }
     }
 }

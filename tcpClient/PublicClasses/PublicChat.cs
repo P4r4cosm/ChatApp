@@ -12,10 +12,11 @@ namespace tcpClient.PublicClasses
         public PublicUser User2 { get; private set; }
         public List<PublicMessage> Messages { get; set; }
         
-        public PublicChat(PublicUser user1, PublicUser user2)
+        public PublicChat(PublicUser user1, PublicUser user2, List<PublicMessage> messages)
         {
             User1 = user1;
             User2 = user2;
+            Messages = messages;
         }
         public override string ToString()
         {

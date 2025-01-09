@@ -23,9 +23,15 @@ namespace ServerTCP
         }
         static public PublicChat Convert(Chat chat)
         {
+            var publicMessages = new List<PublicMessage>();
+            foreach (var messages in chat.Messages)
+            {
+                publicMessages.Add(Convert(messages));
+            }
             var user1 = Convert(chat.User1);
             var user2 = Convert(chat.User2);
-            return new PublicChat(user1, user2);
+
+            return new PublicChat(user1, user2, publicMessages);
         }
     }
 }

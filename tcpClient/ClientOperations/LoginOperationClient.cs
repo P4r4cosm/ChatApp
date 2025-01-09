@@ -7,7 +7,7 @@ using System.Net.Security;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using tcpClient.User;
+using tcpClient.PublicClasses;
 
 namespace tcpClient.ClientOperations
 {

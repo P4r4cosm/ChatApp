@@ -77,5 +77,19 @@ namespace ChatDb
                 return Enumerable.Empty<Message>().AsQueryable();
             }
         }
+        public List<string> GetAllChatsUserNameQuery(User user)
+        {
+            try
+            {
+                return db.Messages
+                   .GroupBy(m => m.Sender.Name == user.Name ? m.Recipient.Name : m.Sender.Name).
+                   Select(g => g.Key).ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
     }
 }

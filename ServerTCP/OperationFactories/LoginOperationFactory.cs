@@ -5,11 +5,11 @@ using ServerTCP.ServerOperations;
 using ChatDb;
 namespace ServerTCP.OperationFactories
 {
-    public static class OperationFactory 
+    public static class LoginOperationFactory 
     {
         private static Dictionary<string, Type> OperationsRegistry { get; set; } = new();
 
-        public static AbstractOperationServer<T> CreateOperation<T>(string request)
+        public static LoginAbstractOperation<T> CreateOperation<T>(string request)
         {
             var data = JsonSerializer.Deserialize<Dictionary<string, object>>(request);
             var header = data["operation"].ToString();
@@ -21,7 +21,7 @@ namespace ServerTCP.OperationFactories
             var dataForOperation = JsonSerializer.Deserialize<Dictionary<string, object>>(data["data"].ToString());
 
             // Создание экземпляра операции
-            var operation = (AbstractOperationServer<T>)Activator.CreateInstance(operationType);
+            var operation = (LoginAbstractOperation<T>)Activator.CreateInstance(operationType);
             operation.Data = dataForOperation;
 
             return operation;
@@ -29,7 +29,7 @@ namespace ServerTCP.OperationFactories
         public static void RegisterOperation<T>(string operationName, Type operationType)
            where T : class
         {
-            if (!typeof(AbstractOperationServer<T>).IsAssignableFrom(operationType))
+            if (!typeof(LoginAbstractOperation<T>).IsAssignableFrom(operationType))
             {
                 throw new ArgumentException($"Type {operationType.Name} must inherit from AbstractOperationServer<T>");
             }

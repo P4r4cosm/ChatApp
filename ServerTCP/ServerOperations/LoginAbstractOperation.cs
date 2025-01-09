@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using ChatDb;
 namespace ServerTCP.ServerOperations
 {
-    public abstract class AbstractOperationServer<T>
+    public abstract class LoginAbstractOperation<T>
     {
         public abstract string Name { get; }
         public abstract Dictionary<string, object> Data { get;  set; }
-        public abstract  Task<T> Execute(SslStream stream, ChatContext database);
+        public abstract Task<T> Execute(SslStream stream, ChatContext database);
     }
 }

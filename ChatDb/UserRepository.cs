@@ -65,6 +65,18 @@ namespace ChatDb
 
             }
         }
+        public User FindByName(string name)
+        {
+            try
+            {
+                return db.Users.FirstOrDefault(u => u.Name == name);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
         
     }
 }

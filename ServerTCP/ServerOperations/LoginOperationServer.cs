@@ -7,10 +7,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using tcpClient.User;
+using tcpClient.PublicClasses;
 namespace ServerTCP.ServerOperations
 {
-    internal class LoginOperationServer : AbstractOperationServer<User>
+    internal class LoginOperationServer : LoginAbstractOperation<User>
     {
         public override string Name { get; } = "Login";
         public override Dictionary<string, object> Data { get;  set; }
