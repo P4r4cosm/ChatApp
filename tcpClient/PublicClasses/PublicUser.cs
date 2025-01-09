@@ -23,5 +23,10 @@ namespace tcpClient.PublicClasses
         {
             Console.WriteLine("Отправлено сообщение :D");
         }
+        public override bool Equals(object? obj)
+        {
+            if (obj is not PublicUser other) return false;
+            return Name == other.Name;
+        }
     }
 }

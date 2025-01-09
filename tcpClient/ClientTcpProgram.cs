@@ -90,11 +90,16 @@ namespace tcpClient
                     (await SecureCommunication.ReadServerMessage(sslStream));
                 Console.WriteLine(data["responseAnswer"].ToString());
                 var publicChatList = JsonSerializer.Deserialize<List<PublicChat>>(data["data"].ToString());
-                foreach (var chat in publicChatList)
-                {
-                    Console.WriteLine(chat.ToString());
-                }
-                while (true);
+                Console.Clear(); //чистим вывод консоли
+                Console.Write("Чтобы перейти к чату введите его номер: "); 
+                var position = Console.GetCursorPosition(); //запоминаем позицию курсора
+                Console.WriteLine();
+                PublicChatDisplayer.DisplayUserChats(publicChatList, CurrentUser); //выводим все чаты
+               
+                Console.SetCursorPosition(position.Left + 1, position.Top); //возвращаем курсор на прежнее место
+                string a = Console.ReadLine(); //считываем в нём клавишу
+                Console.Clear();
+                PublicChatDisplayer.DisplayChat(publicChatList[int.Parse(a)], CurrentUser);
             }
             catch (Exception ex)
             {
