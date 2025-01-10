@@ -25,6 +25,18 @@ namespace tcpClient.PublicClasses
             Recipient = recipient;
             IsViewed = isViewed;
         }
+        public PublicMessage(string text, PublicUser sender, PublicUser recipient, bool isViewed)
+        {
+            Text = text;
+            Sender = sender;
+            Recipient = recipient;
+            IsViewed = isViewed;
+        }
+        public PublicMessage() 
+        {
+
+        }
+
         public override string ToString()
         {
             return $"{Text}\r\n\tОтправлено (кем): {Sender.Name}\t (кому): {Recipient.Name}" +

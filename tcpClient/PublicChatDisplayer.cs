@@ -17,7 +17,7 @@ namespace tcpClient
                 var LastMessage = chat.Messages.FirstOrDefault();
                 var sender = LastMessage?.Sender;
                 var recepient = LastMessage?.Recipient;
-                PublicUser differentUser = chat.User1.Equals(currentUser) ? chat.User2 : chat.User1;
+                PublicUser differentUser = chat.GetDifferentUser(currentUser);
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write($"\t {ChatIndex}) ");
@@ -33,7 +33,7 @@ namespace tcpClient
         {
             var sender = chat.Messages.FirstOrDefault()?.Sender;
             var recepient = chat.Messages.FirstOrDefault()?.Sender;
-            PublicUser differentUser = chat.User1.Equals(currentUser) ? chat.User2 : chat.User1;
+            PublicUser differentUser = chat.GetDifferentUser(currentUser);
             foreach (var message in chat.Messages)
             {
                 PrintMessageForUserInChat(message, currentUser);

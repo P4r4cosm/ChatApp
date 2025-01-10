@@ -27,5 +27,9 @@ namespace tcpClient.PublicClasses
             }
             return result.ToString();
         }
+        public PublicUser GetDifferentUser(PublicUser currentUser)
+        {
+            return User1.Equals(currentUser) ? User2 :User1;
+        }
     }
 }

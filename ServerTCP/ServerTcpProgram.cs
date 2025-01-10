@@ -31,13 +31,15 @@ class ServerTcpProgram
 
             while (CurrentUser == null)
             {
-                var operation = LoginOperationFactory.CreateOperation<User>(await SecureCommunication.ReadClientMessage(sslStream));
+                var operation = LoginOperationFactory.CreateOperation<User>
+                    (await SecureCommunication.ReadClientMessage(sslStream));
                 CurrentUser = await operation.Execute(sslStream, database);
             }
             Console.WriteLine($"Клиент авторизован: {CurrentUser.ToString()}");
 
             UserOperationFactory.RegisterOperation("GetUserChats", typeof(GetUserChatsOperation));
-            while(true)
+            UserOperationFactory.RegisterOperation("SendMessage", typeof(SendMessageOperation));
+            while (true)
             {
                 var operation = UserOperationFactory.CreateOperation
                     (await SecureCommunication.ReadClientMessage(sslStream), CurrentUser);
@@ -80,10 +82,5 @@ class ServerTcpProgram
         {
             server.Stop();
         }
-    }
-
-    public void Method()
-    {
-        throw new System.NotImplementedException();
     }
 }

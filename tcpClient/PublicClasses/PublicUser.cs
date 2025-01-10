@@ -19,9 +19,9 @@ namespace tcpClient.PublicClasses
         {
             return $"User : {Name} Age: {Age}";
         }
-        public async Task SendMessage(string content, PublicUser recipient)
+        public PublicMessage SendMessage(string content, PublicUser recipient)
         {
-            Console.WriteLine("Отправлено сообщение :D");
+            return new PublicMessage(content, this, recipient, false);
         }
         public override bool Equals(object? obj)
         {

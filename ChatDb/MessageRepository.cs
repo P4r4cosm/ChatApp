@@ -16,7 +16,7 @@ namespace ChatDb
         }
         public void CreateMessage(Message message)
         {
-            if (message is null) throw new ArgumentNullException("message");
+            if (message is null) throw new ArgumentNullException("message is null");
             try
             {
                 db.Messages.Add(message);

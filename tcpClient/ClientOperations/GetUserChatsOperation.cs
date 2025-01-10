@@ -35,7 +35,6 @@ namespace tcpClient.ClientOperations
                     (await SecureCommunication.ReadServerMessage(SslStream));
             if (serverAnswer["responseAnswer"].ToString() == $"{Name} OK")
             {
-                Console.WriteLine(serverAnswer["responseAnswer"].ToString());
                 return JsonSerializer.Deserialize<List<PublicChat>>(serverAnswer["data"].ToString());
             }
             else

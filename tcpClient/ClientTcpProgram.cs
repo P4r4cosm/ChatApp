@@ -94,11 +94,16 @@ namespace tcpClient
                 var position = Console.GetCursorPosition(); //запоминаем позицию курсора
                 Console.WriteLine();
                 PublicChatDisplayer.DisplayUserChats(publicChatList, CurrentUser); //выводим все чаты
-
                 Console.SetCursorPosition(position.Left + 1, position.Top); //возвращаем курсор на прежнее место
                 string a = Console.ReadLine(); //считываем в нём клавишу
                 Console.Clear();
                 PublicChatDisplayer.DisplayChat(publicChatList[int.Parse(a)], CurrentUser);
+
+
+
+                var sobesednik = publicChatList[int.Parse(a)].GetDifferentUser(CurrentUser);
+                var message = CurrentUser.SendMessage("Zdarova blya", sobesednik);
+                var sendedMessage = new SendMessageOperation(sslStream, message).RunOperation();
             }
             catch (Exception ex)
             {
