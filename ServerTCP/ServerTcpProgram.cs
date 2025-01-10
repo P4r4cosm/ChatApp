@@ -36,12 +36,14 @@ class ServerTcpProgram
             }
             Console.WriteLine($"Клиент авторизован: {CurrentUser.ToString()}");
 
-            UserAbstractOperation userOperation = new AvailableChatsOperation(CurrentUser);
-            userOperation.Execute(sslStream, database);
+            UserOperationFactory.RegisterOperation("GetUserChats", typeof(GetUserChatsOperation));
             while(true)
             {
-
+                var operation = UserOperationFactory.CreateOperation
+                    (await SecureCommunication.ReadClientMessage(sslStream), CurrentUser);
+                await operation.Execute(sslStream, database);
             }
+           
         }
         catch (Exception ex)
         {

@@ -11,6 +11,7 @@ namespace ServerTCP.ServerOperations
     public abstract class UserAbstractOperation
     {
         public abstract string Name { get; }
+        public abstract Dictionary<string, object> Data { get; set; }
         public abstract User CurrentUser { get; protected set; }
         public abstract Task Execute(SslStream stream, ChatContext database);
     }

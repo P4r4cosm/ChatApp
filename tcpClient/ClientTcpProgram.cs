@@ -86,16 +86,15 @@ namespace tcpClient
                 Console.WriteLine(CurrentUser.ToString());
                 #endregion
 
-                var data = JsonSerializer.Deserialize<Dictionary<string, object>>
-                    (await SecureCommunication.ReadServerMessage(sslStream));
-                Console.WriteLine(data["responseAnswer"].ToString());
-                var publicChatList = JsonSerializer.Deserialize<List<PublicChat>>(data["data"].ToString());
+                
                 Console.Clear(); //чистим вывод консоли
+                var operation = new GetUserChatsOperation(sslStream);
+                var publicChatList = await operation.RunOperation();
                 Console.Write("Чтобы перейти к чату введите его номер: "); 
                 var position = Console.GetCursorPosition(); //запоминаем позицию курсора
                 Console.WriteLine();
                 PublicChatDisplayer.DisplayUserChats(publicChatList, CurrentUser); //выводим все чаты
-               
+
                 Console.SetCursorPosition(position.Left + 1, position.Top); //возвращаем курсор на прежнее место
                 string a = Console.ReadLine(); //считываем в нём клавишу
                 Console.Clear();

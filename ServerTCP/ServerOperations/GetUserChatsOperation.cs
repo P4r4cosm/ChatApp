@@ -11,11 +11,12 @@ using tcpClient.PublicClasses;
 
 namespace ServerTCP.ServerOperations
 {
-    public class AvailableChatsOperation:  UserAbstractOperation
+    public class GetUserChatsOperation:  UserAbstractOperation
     {
-        public override string Name { get; } = "AvailableChats";
+        public override string Name { get; } = "GetUserChats";
         public override User CurrentUser { get; protected set; }
-        public AvailableChatsOperation(User currentUser)
+        public override Dictionary<string, object> Data { get; set; }
+        public GetUserChatsOperation(User currentUser)
         {
             CurrentUser = currentUser;
         }
@@ -27,7 +28,7 @@ namespace ServerTCP.ServerOperations
             foreach (var chat in chats) publicChatList.Add(PublicConverter.Convert(chat));
             var response = new
             {
-                responseAnswer = Name,
+                responseAnswer = $"{Name} OK",
                 data = publicChatList,
             };
             await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), stream);
