@@ -23,7 +23,6 @@ namespace ServerTCP.ServerOperations
         public override async Task Execute(SslStream stream, ChatContext database)
         {
             var publicMessage = JsonSerializer.Deserialize<PublicMessage>(Data["Message"].ToString());
-            Console.WriteLine(publicMessage.ToString());
             var userRepository = new UserRepository(database);
             var messageRepository = new MessageRepository(database);
             var sender = userRepository.FindByName(publicMessage.Sender.Name);

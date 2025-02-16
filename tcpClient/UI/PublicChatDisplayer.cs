@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using tcpClient.PublicClasses;
 
-namespace tcpClient
+namespace tcpClient.UI
 {
     public static class PublicChatDisplayer
     {
@@ -20,9 +20,9 @@ namespace tcpClient
                 PublicUser differentUser = chat.GetDifferentUser(currentUser);
 
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write($"\t {ChatIndex}) ");
+                Console.Write($"\t {ChatIndex+1}) ");
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"Чат с { differentUser}");
+                Console.WriteLine($"Чат с {differentUser}");
                 Console.WriteLine($"Последнее сообщение:");
                 ChatIndex++;
                 Console.ForegroundColor = ConsoleColor.White;

@@ -14,7 +14,6 @@ namespace ServerTCP.OperationFactories
 
         public static UserAbstractOperation CreateOperation(string request, User user)
         {
-            Console.WriteLine(request);
             var data = JsonSerializer.Deserialize<Dictionary<string, object>>(request);
             var header = data["operation"].ToString();
             if (!OperationsRegistry.TryGetValue(header, out var operationType))

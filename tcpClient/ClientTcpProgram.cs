@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Net.Security;
 using tcpClient.ClientOperations;
 using tcpClient.PublicClasses;
+using tcpClient.UI;
 namespace tcpClient
 {
     class ClientTcpProgram
@@ -87,23 +88,23 @@ namespace tcpClient
                 #endregion
 
                 
-                Console.Clear(); //чистим вывод консоли
+                //Console.Clear(); //чистим вывод консоли
                 var operation = new GetUserChatsOperation(sslStream);
                 var publicChatList = await operation.RunOperation();
-                Console.Write("Чтобы перейти к чату введите его номер: "); 
-                var position = Console.GetCursorPosition(); //запоминаем позицию курсора
-                Console.WriteLine();
-                PublicChatDisplayer.DisplayUserChats(publicChatList, CurrentUser); //выводим все чаты
-                Console.SetCursorPosition(position.Left + 1, position.Top); //возвращаем курсор на прежнее место
-                string a = Console.ReadLine(); //считываем в нём клавишу
-                Console.Clear();
-                PublicChatDisplayer.DisplayChat(publicChatList[int.Parse(a)], CurrentUser);
+                //Console.Write("Чтобы перейти к чату введите его номер: "); 
+                //var position = Console.GetCursorPosition(); //запоминаем позицию курсора
+                //Console.WriteLine();
+                //PublicChatDisplayer.DisplayUserChats(publicChatList, CurrentUser); //выводим все чаты
+                //Console.SetCursorPosition(position.Left + 1, position.Top); //возвращаем курсор на прежнее место
+                //string a = Console.ReadLine(); //считываем в нём клавишу
+                //Console.Clear();
+                //PublicChatDisplayer.DisplayChat(publicChatList[int.Parse(a)], CurrentUser);
+                var manager = new PageManager();
+                manager.PushPage(new ChatsPage(publicChatList, CurrentUser, manager));
 
-
-
-                var sobesednik = publicChatList[int.Parse(a)].GetDifferentUser(CurrentUser);
-                var message = CurrentUser.SendMessage("Zdarova blya", sobesednik);
-                var sendedMessage = new SendMessageOperation(sslStream, message).RunOperation();
+                //var sobesednik = publicChatList[int.Parse(a)].GetDifferentUser(CurrentUser);
+                //var message = CurrentUser.SendMessage("Zdarova blya", sobesednik);
+                //var sendedMessage = new SendMessageOperation(sslStream, message).RunOperation();
             }
             catch (Exception ex)
             {
