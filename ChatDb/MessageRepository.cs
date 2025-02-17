@@ -81,7 +81,7 @@ namespace ChatDb
         {
             try
             {
-                return db.Messages
+                return db.Messages.Where(m=>m.Sender==user || m.Recipient==user)
                    .GroupBy(m => m.Sender.Name == user.Name ? m.Recipient.Name : m.Sender.Name).
                    Select(g => g.Key).ToList();
             }

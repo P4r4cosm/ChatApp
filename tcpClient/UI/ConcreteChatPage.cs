@@ -24,7 +24,7 @@ namespace tcpClient.UI
         }
         public void Display()
         {
-            Console.Clear();
+            ConsoleExtensions.ClearFullScreen();
             Console.BackgroundColor = ConsoleColor.DarkRed;
             Console.WriteLine($"\t====Чат с пользователем {DifferentUser.Name}====");
             Console.BackgroundColor = ConsoleColor.Black;

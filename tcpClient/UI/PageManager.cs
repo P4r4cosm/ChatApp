@@ -19,7 +19,7 @@ namespace tcpClient.UI
         public void PushPage(IPage page)
         {
             pageStack.Push(page);
-            Console.Clear();
+            ConsoleExtensions.ClearFullScreen();
             page.Display();
             page.HandleInput();
         }
@@ -28,7 +28,7 @@ namespace tcpClient.UI
             if (pageStack.Count > 1)
             {
                 pageStack.Pop();
-                Console.Clear();
+                ConsoleExtensions.ClearFullScreen();
                 var page = pageStack.Peek();
                 page.Display();
                 page.HandleInput();

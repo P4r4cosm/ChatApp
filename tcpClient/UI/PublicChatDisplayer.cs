@@ -31,6 +31,7 @@ namespace tcpClient.UI
         }
         public static void DisplayChat(PublicChat chat, PublicUser currentUser)
         {
+            chat.Messages=chat.Messages.OrderBy(m => m.DepartureTime).ToList();
             var sender = chat.Messages.FirstOrDefault()?.Sender;
             var recepient = chat.Messages.FirstOrDefault()?.Sender;
             PublicUser differentUser = chat.GetDifferentUser(currentUser);
