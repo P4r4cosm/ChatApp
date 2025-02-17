@@ -55,6 +55,7 @@ namespace tcpClient.UI
             else
             {
                 Console.WriteLine("Неверный ввод. Попробуйте снова.");
+                HandleInput();
             }
         }
     }

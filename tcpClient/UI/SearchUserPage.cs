@@ -31,12 +31,14 @@ namespace tcpClient.UI
         public void HandleInput()
         {
             PublicUser user = null;
-            while (user == null)
+            while (true)
             {
                 string input = Console.ReadLine();
                 var op = new FindUserOperation(SslStream);
                 op.Data["UserName"] = input;
                 user = op.RunOperationAsync().Result;
+                if (user != null) break;
+                Console.WriteLine("Попробуйте снова: ");
             }
             PageManager.pageStack.Pop();
             var chatsPage = PageManager.pageStack.Peek() as ChatsPage;
