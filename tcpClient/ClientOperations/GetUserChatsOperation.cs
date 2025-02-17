@@ -23,7 +23,7 @@ namespace tcpClient.ClientOperations
             Data = new Dictionary<string, object>();
         }
 
-        public async override Task<List<PublicChat>> RunOperation()
+        public async override Task<List<PublicChat>> RunOperationAsync()
         {
             var request = new
             {

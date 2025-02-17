@@ -25,7 +25,7 @@ namespace tcpClient.ClientOperations
             Data = new Dictionary<string, object>();
             Message = publicMessage;
         }
-        public override async Task<PublicMessage> RunOperation()
+        public override async Task<PublicMessage> RunOperationAsync()
         {
             Data.Clear();
             Data.Add("Message", Message);

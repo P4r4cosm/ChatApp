@@ -70,7 +70,7 @@ namespace tcpClient
                     while (true)
                     {
                        
-                        CurrentUser = await login.RunOperation();
+                        CurrentUser = await login.RunOperationAsync();
                         if (CurrentUser == null)
                         {
                             Console.WriteLine("Нажмите Esc чтобы вернуться назад или любую другую клавишу для продолжения.");
@@ -90,7 +90,7 @@ namespace tcpClient
                 
                 //Console.Clear(); //чистим вывод консоли
                 var operation = new GetUserChatsOperation(sslStream);
-                var publicChatList = await operation.RunOperation();
+                var publicChatList = await operation.RunOperationAsync();
                 //Console.Write("Чтобы перейти к чату введите его номер: "); 
                 //var position = Console.GetCursorPosition(); //запоминаем позицию курсора
                 //Console.WriteLine();
@@ -99,7 +99,7 @@ namespace tcpClient
                 //string a = Console.ReadLine(); //считываем в нём клавишу
                 //Console.Clear();
                 //PublicChatDisplayer.DisplayChat(publicChatList[int.Parse(a)], CurrentUser);
-                var manager = new PageManager();
+                var manager = new PageManager(sslStream);
                 manager.PushPage(new ChatsPage(publicChatList, CurrentUser, manager));
 
                 //var sobesednik = publicChatList[int.Parse(a)].GetDifferentUser(CurrentUser);

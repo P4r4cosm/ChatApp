@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,12 @@ namespace tcpClient.UI
     public class PageManager
     {
         public Stack<IPage> pageStack = new Stack<IPage>();
+
+        public SslStream SslStream { get;private set; }
+        public PageManager(SslStream sslStream)
+        {
+            SslStream = sslStream;
+        }
         public void PushPage(IPage page)
         {
             pageStack.Push(page);
@@ -21,7 +28,6 @@ namespace tcpClient.UI
             if (pageStack.Count > 1)
             {
                 pageStack.Pop();
-                
                 Console.Clear();
                 var page = pageStack.Peek();
                 page.Display();

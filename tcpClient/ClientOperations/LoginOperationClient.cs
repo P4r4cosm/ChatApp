@@ -22,7 +22,7 @@ namespace tcpClient.ClientOperations
             Data = new Dictionary<string, object>();
             Name = isExists ? "Login" : "CreateAccount";
         }
-        public override async Task<PublicUser> RunOperation()
+        public override async Task<PublicUser> RunOperationAsync()
         {
             Data.Clear();
             Console.Write("Введите логин: ");
