@@ -36,16 +36,9 @@ class ServerTcpProgram
                 CurrentUser = await operation.Execute(sslStream, database);
             }
             Console.WriteLine($"Клиент авторизован: {CurrentUser.ToString()}");
-            //var mes = new Message();
-            //mes.DepartureTime = DateTime.UtcNow;
-            //mes.Sender = CurrentUser;
-            //mes.Recipient = CurrentUser;
-            //mes.Text = "Сосал?";
-            //mes.IsViewed = false;
-            //var mr = new MessageRepository(database);
-            //mr.CreateMessage(mes);
             UserOperationFactory.RegisterOperation("GetUserChats", typeof(GetUserChatsOperation));
             UserOperationFactory.RegisterOperation("SendMessage", typeof(SendMessageOperation));
+            UserOperationFactory.RegisterOperation("FindUserOperation", typeof(FindUserOperation));
             while (true)
             {
                 var operation = UserOperationFactory.CreateOperation

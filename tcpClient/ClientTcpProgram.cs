@@ -41,7 +41,7 @@ namespace tcpClient
                 Console.WriteLine("SSL handshake completed.");
                 #region login
                 bool isAccountExists = false;
-                while (CurrentUser==null)
+                while (CurrentUser == null)
                 {
                     var flag = true;
                     Console.WriteLine("Выберите вариант входа: \n" +
@@ -65,11 +65,11 @@ namespace tcpClient
                                 continue;
                         }
                     }
-                    
+
                     var login = new LoginOperationClient(sslStream, isAccountExists);
                     while (true)
                     {
-                       
+
                         CurrentUser = await login.RunOperationAsync();
                         if (CurrentUser == null)
                         {
@@ -87,24 +87,13 @@ namespace tcpClient
                 Console.WriteLine(CurrentUser.ToString());
                 #endregion
 
-                
-                //Console.Clear(); //чистим вывод консоли
+
                 var operation = new GetUserChatsOperation(sslStream);
                 var publicChatList = await operation.RunOperationAsync();
-                //Console.Write("Чтобы перейти к чату введите его номер: "); 
-                //var position = Console.GetCursorPosition(); //запоминаем позицию курсора
-                //Console.WriteLine();
-                //PublicChatDisplayer.DisplayUserChats(publicChatList, CurrentUser); //выводим все чаты
-                //Console.SetCursorPosition(position.Left + 1, position.Top); //возвращаем курсор на прежнее место
-                //string a = Console.ReadLine(); //считываем в нём клавишу
-                //Console.Clear();
-                //PublicChatDisplayer.DisplayChat(publicChatList[int.Parse(a)], CurrentUser);
-                var manager = new PageManager(sslStream);
-                manager.PushPage(new ChatsPage(publicChatList, CurrentUser, manager));
 
-                //var sobesednik = publicChatList[int.Parse(a)].GetDifferentUser(CurrentUser);
-                //var message = CurrentUser.SendMessage("Zdarova blya", sobesednik);
-                //var sendedMessage = new SendMessageOperation(sslStream, message).RunOperation();
+                var manager = new PageManager(sslStream);
+                manager.PushPage(new ChatsPage(publicChatList, CurrentUser, manager, sslStream));
+
             }
             catch (Exception ex)
             {
