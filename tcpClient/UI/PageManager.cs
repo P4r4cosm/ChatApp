@@ -12,7 +12,6 @@ namespace tcpClient.UI
     public class PageManager
     {
         public Stack<IPage> pageStack = new Stack<IPage>();
-        private volatile bool hasNewMessage = false;
         public List<PublicChat> Chats { get; private set; }
         public SslStream SslStream { get; private set; }
         public PageManager(SslStream sslStream, List<PublicChat> publicChats)
@@ -58,7 +57,7 @@ namespace tcpClient.UI
                 {
                     chat.Messages.Add(message);
                     chat.Messages = chat.Messages.OrderByDescending(x => x.DepartureTime).ToList();
-                    Refresh();
+                    //Refresh();
                     return;
                 };
 
