@@ -29,7 +29,7 @@ namespace tcpClient.UI
         }
         public void PopPage()
         {
-            if (pageStack.Count > 0)
+            if (pageStack.Count > 1)
             {
                 pageStack.Pop();
                 ConsoleExtensions.ClearFullScreen();
