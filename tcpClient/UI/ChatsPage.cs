@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
+using tcpClient.ClientOperations;
 using tcpClient.PublicClasses;
 
 namespace tcpClient.UI
@@ -14,11 +15,11 @@ namespace tcpClient.UI
         public SslStream SslStream { get; private set; }
         public PublicUser CurrentUser { get; private set; }
         public PageManager PageManager { get; private set; }
-        public ChatsPage(List<PublicChat> chats, PublicUser user, PageManager pageManager, SslStream sslStream)
+        public ChatsPage(PublicUser user, PageManager pageManager, SslStream sslStream)
         {
-            Chats = chats;
             CurrentUser = user;
             PageManager = pageManager;
+            Chats = PageManager.Chats;
             SslStream = sslStream;
         }
 

@@ -99,8 +99,8 @@ namespace tcpClient
                 var publicChatList = await oper;
 
 
-                var manager = new PageManager(sslStream);
-                manager.PushPage(new ChatsPage(publicChatList, CurrentUser, manager, sslStream));
+                var manager = new PageManager(sslStream, publicChatList);
+                manager.PushPage(new ChatsPage(CurrentUser, manager, sslStream));
             }
             catch (Exception ex)
             {

@@ -35,7 +35,7 @@ namespace tcpClient.ClientOperations
             await operation.RunOperationAsync();
             while (!AnswerTaken)
             {
-                Task.Delay(100);
+                
             }
 
             //устанавливаем флаг снова в false
@@ -68,8 +68,8 @@ namespace tcpClient.ClientOperations
                     case "New message":
                         {
                             var message = JsonSerializer.Deserialize<PublicMessage>(data["data"].ToString());
-                            //MessageRecived?.Invoke(message);
-                            Console.WriteLine($"Сообщение получено : {message.ToString()}");
+                            MessageRecived?.Invoke(message);
+                            //Console.WriteLine($"Сообщение получено : {message.ToString()}");
                             break;
                         }
                     default:
