@@ -25,7 +25,7 @@ namespace tcpClient.ClientOperations
             Data = new Dictionary<string, object>();
             Message = publicMessage;
         }
-        public override async Task<PublicMessage> RunOperationAsync()
+        public override async Task RunOperationAsync()
         {
             Data.Clear();
             Data.Add("Message", Message);
@@ -34,19 +34,19 @@ namespace tcpClient.ClientOperations
                 operation = Name,
                 data = Data,
             };
-            await SecureCommunication.SendMessageToServer(JsonSerializer.Serialize(request), SslStream);
-            var answer = JsonSerializer.Deserialize<Dictionary<string, object>>
-                (await SecureCommunication.ReadServerMessage(SslStream));
-            if (answer["responseAnswer"].ToString() == $"{Name} OK")
-            {
-                Console.WriteLine(answer["responseAnswer"].ToString());
-                return JsonSerializer.Deserialize<PublicMessage>(answer["data"].ToString());
-            }
-            else
-            {
-                Console.WriteLine(answer["responseAnswer"].ToString());
-            }
-            return null;
+            await SecureCommunication.SendMessageToServerAsync(JsonSerializer.Serialize(request), SslStream);
+            //var answer = JsonSerializer.Deserialize<Dictionary<string, object>>
+            //    (await SecureCommunication.ReadServerMessageAsync(SslStream));
+            //if (answer["responseAnswer"].ToString() == $"{Name} OK")
+            //{
+            //    Console.WriteLine(answer["responseAnswer"].ToString());
+            //    return JsonSerializer.Deserialize<PublicMessage>(answer["data"].ToString());
+            //}
+            //else
+            //{
+            //    Console.WriteLine(answer["responseAnswer"].ToString());
+            //}
+            //return null;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace ServerTCP.ServerOperations
                         responseAnswer = $"{Name} OK",
                         data = PublicConverter.Convert(user),
                     };
-                    await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), SslStream);
+                    await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), SslStream);
                     return user;
                 }
             }
@@ -45,7 +45,7 @@ namespace ServerTCP.ServerOperations
                     responseAnswer = $"{Name} Failed",
                     data = $"{ex.Message}",
                 };
-                await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), SslStream);
+                await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), SslStream);
                 return null;
             }
             return null;

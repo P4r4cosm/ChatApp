@@ -9,7 +9,7 @@ using tcpClient.PublicClasses;
 
 namespace tcpClient.UI
 {
-    public class SearchUserPage: IPage
+    public class SearchUserPage : IPage
     {
         public PageManager PageManager { get; private set; }
         public PublicUser CurrentUser { get; private set; }
@@ -36,7 +36,7 @@ namespace tcpClient.UI
                 string input = Console.ReadLine();
                 var op = new FindUserOperation(SslStream);
                 op.Data["UserName"] = input;
-                user = op.RunOperationAsync().Result;
+                user = OperationFactory.RunOperation<PublicUser>(op).Result;
                 if (user != null) break;
                 Console.WriteLine("Попробуйте снова: ");
             }
@@ -45,10 +45,10 @@ namespace tcpClient.UI
             var chats = chatsPage.Chats;
             foreach (var item in chats)
             {
-                Console.WriteLine(item.User1.ToString()+"\t"+item.User2) ;
+                Console.WriteLine(item.User1.ToString() + "\t" + item.User2);
                 if ((item.User1.Equals(user) && item.User2.Equals(CurrentUser)) || (item.User2.Equals(user) && item.User1.Equals(CurrentUser)))
                 {
-                    var page = new ConcreteChatPage(item,CurrentUser, PageManager);
+                    var page = new ConcreteChatPage(item, CurrentUser, PageManager);
                     PageManager.PushPage(page);
                 }
 

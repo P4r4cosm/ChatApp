@@ -19,7 +19,7 @@ namespace tcpClient.UI
             Chats = chats;
             CurrentUser = user;
             PageManager = pageManager;
-            SslStream=sslStream;
+            SslStream = sslStream;
         }
 
         public void Display()
@@ -29,7 +29,7 @@ namespace tcpClient.UI
             Console.WriteLine("\t\t\t==== Список чатов ====");
             Console.BackgroundColor = ConsoleColor.Black;
             PublicChatDisplayer.DisplayUserChats(Chats, CurrentUser); //выводим все чаты
-            Console.BackgroundColor=ConsoleColor.DarkRed;
+            Console.BackgroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("\n\t 0. Назад (выход)");
             Console.WriteLine("\t Введите 'new chat' для поиска нового пользователя и отправки сообщения ему");
             Console.Write("\t Выберите чат: ");
@@ -50,7 +50,7 @@ namespace tcpClient.UI
             }
             if (int.TryParse(input, out int index) && index > 0 && index <= Chats.Count)
             {
-                PageManager.PushPage(new ConcreteChatPage(Chats[index - 1],CurrentUser, PageManager));
+                PageManager.PushPage(new ConcreteChatPage(Chats[index - 1], CurrentUser, PageManager));
             }
             else
             {

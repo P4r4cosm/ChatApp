@@ -22,26 +22,28 @@ namespace tcpClient.ClientOperations
             SslStream = sslStream;
             Data = new Dictionary<string, object>();
         }
-        public async override Task<PublicUser> RunOperationAsync()
+        public async override Task RunOperationAsync()
         {
+           
             var request = new
             {
                 operation = Name,
                 data = Data
             };
-            await SecureCommunication.SendMessageToServer(JsonSerializer.Serialize(request), SslStream);
-            var serverAnswer = JsonSerializer.Deserialize<Dictionary<string, object>>
-                    (await SecureCommunication.ReadServerMessage(SslStream));
-            if (serverAnswer["responseAnswer"].ToString() == $"{Name} OK")
-            {
-                return JsonSerializer.Deserialize<PublicUser>(serverAnswer["data"].ToString());
-            }
-            else
-            {
-                Console.WriteLine(serverAnswer["responseAnswer"].ToString());
-                Console.WriteLine("Пользователь не найден");
-            }
-            return null;
+            await SecureCommunication.SendMessageToServerAsync(JsonSerializer.Serialize(request), SslStream);
+            //var serverAnswer = JsonSerializer.Deserialize<Dictionary<string, object>>
+            //        (await SecureCommunication.ReadServerMessageAsync(SslStream));
+           
+            //if (serverAnswer["responseAnswer"].ToString() == $"{Name} OK")
+            //{
+            //    return JsonSerializer.Deserialize<PublicUser>(serverAnswer["data"].ToString());
+            //}
+            //else
+            //{
+            //    Console.WriteLine(serverAnswer["responseAnswer"].ToString());
+            //    Console.WriteLine("Пользователь не найден");
+            //}
+            //return null;
         }
     }
 }

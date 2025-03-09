@@ -15,7 +15,7 @@ namespace ServerTCP.ServerOperations
     {
         public override string Name { get; } = "SendMessage";
         public override User CurrentUser { get; protected set; }
-        public override Dictionary<string, object> Data { get; set; }
+        public override Dictionary<string, object> Data { get; set; } 
         public SendMessageOperation(User currentUser)
         {
             CurrentUser = currentUser;
@@ -32,7 +32,7 @@ namespace ServerTCP.ServerOperations
                 Text = publicMessage.Text,
                 DepartureTime = publicMessage.DepartureTime,
                 Sender = sender,
-                Recipient = recipient,
+                Recipient = recipient, //получатель
                 IsViewed = publicMessage.IsViewed,
             };
             try
@@ -43,7 +43,24 @@ namespace ServerTCP.ServerOperations
                     responseAnswer = $"{Name} OK",
                     data = publicMessage,
                 };
-                await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), stream);
+                await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), stream);
+
+                //код для отправки сообщения получателю
+                if (sender.Id != recipient.Id)
+                {
+                    // получаем stream для получателя
+                    var recipientStream = ClientManager.GetClientStream(recipient.Id);
+                    if (recipientStream is not null)
+                    {
+                        var notify = new
+                        {
+                            responseAnswer = $"New message",
+                            data = publicMessage,
+                        };
+                        await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(notify), recipientStream);
+                    }
+                }
+
             }
             catch (ArgumentNullException ex)
             {
@@ -53,7 +70,7 @@ namespace ServerTCP.ServerOperations
                     responseAnswer = $"{Name} Failed",
                     data = $"{ex.Message}",
                 };
-                await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), stream);
+                await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), stream);
             }
         }
     }

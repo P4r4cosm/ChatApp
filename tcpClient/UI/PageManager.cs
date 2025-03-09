@@ -11,7 +11,7 @@ namespace tcpClient.UI
     {
         public Stack<IPage> pageStack = new Stack<IPage>();
 
-        public SslStream SslStream { get;private set; }
+        public SslStream SslStream { get; private set; }
         public PageManager(SslStream sslStream)
         {
             SslStream = sslStream;

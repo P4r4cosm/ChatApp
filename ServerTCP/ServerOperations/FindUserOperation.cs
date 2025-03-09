@@ -32,7 +32,7 @@ namespace ServerTCP.ServerOperations
                     responseAnswer = $"{Name} OK",
                     data = pubUser,
                 };
-                await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), stream);
+                await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), stream);
                 return;
             }
             else
@@ -42,7 +42,7 @@ namespace ServerTCP.ServerOperations
                     responseAnswer = $"{Name} Failed",
                     data = "Login or password is incorrect",
                 };
-                await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), stream);
+                await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), stream);
             }
         }
     }

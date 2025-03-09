@@ -23,26 +23,28 @@ namespace tcpClient.ClientOperations
             Data = new Dictionary<string, object>();
         }
 
-        public async override Task<List<PublicChat>> RunOperationAsync()
+        public async override Task RunOperationAsync()
         {
+           
             var request = new
             {
                 operation = Name,
                 data = Data
             };
-            await SecureCommunication.SendMessageToServer(JsonSerializer.Serialize(request), SslStream);
-            var serverAnswer = JsonSerializer.Deserialize<Dictionary<string, object>>
-                    (await SecureCommunication.ReadServerMessage(SslStream));
-            if (serverAnswer["responseAnswer"].ToString() == $"{Name} OK")
-            {
-                return JsonSerializer.Deserialize<List<PublicChat>>(serverAnswer["data"].ToString());
-            }
-            else
-            {
-                Console.WriteLine(serverAnswer["responseAnswer"].ToString());
-                Console.WriteLine(serverAnswer["data"].ToString());
-            }
-            return null;
+            await SecureCommunication.SendMessageToServerAsync(JsonSerializer.Serialize(request), SslStream);
+            //var serverAnswer = JsonSerializer.Deserialize<Dictionary<string, object>>
+            //        (await SecureCommunication.ReadServerMessageAsync(SslStream));
+            
+            ////if (serverAnswer["responseAnswer"].ToString() == $"{Name} OK")
+            ////{
+            ////    return JsonSerializer.Deserialize<List<PublicChat>>(serverAnswer["data"].ToString());
+            ////}
+            ////else
+            ////{
+            ////    Console.WriteLine(serverAnswer["responseAnswer"].ToString());
+            ////    Console.WriteLine(serverAnswer["data"].ToString());
+            ////}
+            ////return null;
         }
     }
 }

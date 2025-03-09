@@ -38,8 +38,8 @@ namespace tcpClient.ClientOperations
                 operation = Name,
                 data = Data
             };
-            await SecureCommunication.SendMessageToServer(JsonSerializer.Serialize(request), SslStream);
-            var loginResult = JsonSerializer.Deserialize<Dictionary<string, object>>(await SecureCommunication.ReadServerMessage(SslStream));
+            await SecureCommunication.SendMessageToServerAsync(JsonSerializer.Serialize(request), SslStream);
+            var loginResult = JsonSerializer.Deserialize<Dictionary<string, object>>(await SecureCommunication.ReadServerMessageAsync(SslStream));
 
             if (loginResult?["responseAnswer"].ToString()== $"{Name} OK")
             {

@@ -31,7 +31,7 @@ namespace ServerTCP.ServerOperations
                 responseAnswer = $"{Name} OK",
                 data = publicChatList,
             };
-            await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), stream);
+            await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), stream);
         }
     }
 }

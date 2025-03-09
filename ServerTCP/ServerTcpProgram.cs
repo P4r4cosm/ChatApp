@@ -17,6 +17,7 @@ class ServerTcpProgram
     {
         Console.WriteLine($"Входящее подключение: {client.Client.RemoteEndPoint}");
         using var sslStream = new SslStream(client.GetStream());
+        User CurrentUser = null!;
         try
         {
             // Аутентификация сервера
@@ -25,16 +26,17 @@ class ServerTcpProgram
 
             Console.WriteLine("SSL handshake completed.");
 
-            User CurrentUser = null;
+            
             LoginOperationFactory.RegisterOperation<User>("Login", typeof(LoginOperationServer));
             LoginOperationFactory.RegisterOperation<User>("CreateAccount", typeof(CreateAccountOperation));
 
             while (CurrentUser == null)
             {
                 var operation = LoginOperationFactory.CreateOperation<User>
-                    (await SecureCommunication.ReadClientMessage(sslStream));
+                    (await SecureCommunication.ReadClientMessageAsync(sslStream));
                 CurrentUser = await operation.Execute(sslStream, database);
             }
+            ClientManager.AddClient(CurrentUser.Id, sslStream);
             Console.WriteLine($"Клиент авторизован: {CurrentUser.ToString()}");
             UserOperationFactory.RegisterOperation("GetUserChats", typeof(GetUserChatsOperation));
             UserOperationFactory.RegisterOperation("SendMessage", typeof(SendMessageOperation));
@@ -42,7 +44,7 @@ class ServerTcpProgram
             while (true)
             {
                 var operation = UserOperationFactory.CreateOperation
-                    (await SecureCommunication.ReadClientMessage(sslStream), CurrentUser);
+                    (await SecureCommunication.ReadClientMessageAsync(sslStream), CurrentUser);
                 await operation.Execute(sslStream, database);
             }
            
@@ -53,6 +55,7 @@ class ServerTcpProgram
         }
         finally
         {
+            ClientManager.RemoveClient(CurrentUser.Id);
             client.Close();
         }
     }

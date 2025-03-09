@@ -20,7 +20,7 @@ namespace tcpClient.UI
             Chat = chat;
             CurrentUser = currentUser;
             PageManager = manager;
-            DifferentUser=Chat.GetDifferentUser(currentUser);
+            DifferentUser = Chat.GetDifferentUser(currentUser);
         }
         public void Display()
         {
@@ -43,9 +43,10 @@ namespace tcpClient.UI
                 PageManager.PopPage();
                 return;
             }
-            var message =  new PublicMessage(text: input, sender: CurrentUser, 
+            var message = new PublicMessage(text: input, sender: CurrentUser,
                 recipient: DifferentUser, isViewed: false);
-            var op = await new SendMessageOperation(PageManager.SslStream, message).RunOperationAsync();
+            //var op = await new SendMessageOperation(PageManager.SslStream, message).RunOperationAsync();
+            var op = await OperationFactory.RunOperation<PublicMessage>(new SendMessageOperation(PageManager.SslStream, message));
             Chat.Messages.Add(message);
             PageManager.pageStack.Pop();
             PageManager.PushPage(this);

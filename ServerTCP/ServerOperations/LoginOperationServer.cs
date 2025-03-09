@@ -23,7 +23,7 @@ namespace ServerTCP.ServerOperations
                     responseAnswer = $"{Name} OK",
                     data = PublicConverter.Convert(user),
                 };
-                await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), SslStream);
+                await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), SslStream);
                 return user;
             }
             else
@@ -33,7 +33,7 @@ namespace ServerTCP.ServerOperations
                     responseAnswer = $"{Name} Failed",
                     data = "Login or password is incorrect",
                 };
-                await SecureCommunication.SendMessageToClient(JsonSerializer.Serialize(response), SslStream);
+                await SecureCommunication.SendMessageToClientAsync(JsonSerializer.Serialize(response), SslStream);
                 return null;
             }
         }

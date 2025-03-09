@@ -10,24 +10,42 @@ namespace ServerTCP
 {
     public class SecureCommunication
     {
-        public static async Task SendMessageToClient(string message, SslStream stream)
+        private static SemaphoreSlim _sslSemaphore = new SemaphoreSlim(1, 1);
+        public static async Task SendMessageToClientAsync(string message, SslStream stream)
         {
-            var response = Encoding.UTF8.GetBytes($"{message}\n");
-            await stream.WriteAsync(response);
-        }
-        public static async Task<string> ReadClientMessage(SslStream stream)
-        {
-            var buffer = new List<byte>();
-            int bytesRead;
-
-            // Читаем данные до символа '\n'
-            while ((bytesRead = stream.ReadByte()) != -1 && bytesRead != '\n')
+            //await _sslSemaphore.WaitAsync();
+            try
             {
-                buffer.Add((byte)bytesRead);
+                var response = Encoding.UTF8.GetBytes($"{message}\n");
+                await stream.WriteAsync(response);
             }
-            // Обработка сообщения
-            var message = Encoding.UTF8.GetString(buffer.ToArray());
-            return message;
+            finally
+            {
+                //_sslSemaphore.Release();
+            }
+        }
+        public static async Task<string> ReadClientMessageAsync(SslStream stream)
+        {
+            //await _sslSemaphore.WaitAsync();
+            try
+            {
+                var buffer = new List<byte>();
+                int bytesRead;
+
+                // Читаем данные до символа '\n'
+                while ((bytesRead = stream.ReadByte()) != -1 && bytesRead != '\n')
+                {
+                    buffer.Add((byte)bytesRead);
+                }
+
+                // Обработка сообщения
+                var message = Encoding.UTF8.GetString(buffer.ToArray());
+                return message;
+            }
+            finally
+            {
+                //_sslSemaphore.Release();
+            }
         }
     }
 }
