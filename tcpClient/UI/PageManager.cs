@@ -62,6 +62,7 @@ namespace tcpClient.UI
                 };
 
             }
+            var newChat = new PublicChat(user1,user2,new List<PublicMessage>() {message});
         }
     }
 }
